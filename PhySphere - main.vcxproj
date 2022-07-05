@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>16.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{a4e68650-4bfc-47ff-abcb-99d118cd841a}</ProjectGuid>
+    <RootNamespace>PhySpheremain</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>PhySphere Framework</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>GLAD_STATIC</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(SolutionDir)Libraries\STB;$(SolutionDir)Libraries\IMGUI;$(SolutionDir)Libraries\GLM;$(SolutionDir)Libraries\GLFW\include\GLFW;$(SolutionDir);$(SolutionDir)Libraries\GLAD\include;$(SolutionDir)Libraries\SIMPLEX;$(SolutionDir)Libraries\GLAD\src;$(SolutionDir)Libraries\GLAD\include\</AdditionalIncludeDirectories>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(SolutionDir)Libraries\GLFW\lib-vc2022;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glfw3.lib;glfw3_mt.lib;glfw3dll.lib;opengl32.lib;User32.lib;Gdi32.lib;Shell32.lib</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>GLEW_STATIC</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(SolutionDir)Libraries\STB;$(SolutionDir)Libraries\IMGUI;$(SolutionDir)Libraries\GLM;$(SolutionDir)Libraries\GLFW\include\GLFW;$(SolutionDir);$(SolutionDir)Libraries\SIMPLEX;$(SolutionDir)Libraries\GLEW\include\GL</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(SolutionDir)Libraries\GLFW\lib-vc2019;$(SolutionDir)Libraries\GLEW\lib\Release\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glfw3.lib; opengl32.lib; User32.lib; Gdi32.lib; Shell32.lib; glew32s.lib;</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>GLEW_STATIC</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(SolutionDir)Libraries\STB;$(SolutionDir)Libraries\IMGUI;$(SolutionDir)Libraries\GLM;$(SolutionDir)Libraries\GLFW\include\GLFW;$(SolutionDir);$(SolutionDir)Libraries\GLAD\include;$(SolutionDir)Libraries\SIMPLEX;$(SolutionDir)Libraries\GLEW\include\GL</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(SolutionDir)Libraries\GLFW\lib-vc2022;$(SolutionDir)Libraries\GLEW\lib\Release\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glfw3.lib;glfw3_mt.lib;glfw3dll.lib;opengl32.lib;User32.lib;Gdi32.lib;Shell32.lib</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>GLEW_STATIC</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(SolutionDir)Libraries\STB;$(SolutionDir)Libraries\IMGUI;$(SolutionDir)Libraries\GLM;$(SolutionDir)Libraries\GLFW\include\GLFW;$(SolutionDir);$(SolutionDir)Libraries\SIMPLEX;$(SolutionDir)Libraries\GLEW\include\GL</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(SolutionDir)Libraries\GLFW\lib-vc2019;$(SolutionDir)Libraries\GLEW\lib\Release\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glfw3.lib; opengl32.lib; User32.lib; Gdi32.lib; Shell32.lib; glew32s.lib;</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="Engine\WorldCreation\Fundamental Elements\AABB.cpp" />
+    <ClCompile Include="Engine\WorldCreation\World Generator\BiomeDesigner.cpp" />
+    <ClCompile Include="Engine\WorldCreation\World Generator\DesertGenerator.cpp" />
+    <ClCompile Include="Engine\Rendering\BufferManager.cpp" />
+    <ClCompile Include="Engine\WorldCreation\Fundamental Elements\ChunkTree.cpp" />
+    <ClCompile Include="Engine\WorldCreation\World Generator\ChunkGenerator.cpp" />
+    <ClCompile Include="Engine\WorldCreation\Fundamental Elements\Chunk.cpp" />
+    <ClCompile Include="Engine\BackEnd\ExceptionHandler.cpp" />
+    <ClCompile Include="Engine\WorldCreation\World Generator\ForestGenerator.cpp" />
+    <ClCompile Include="Engine\WorldCreation\World Generator\FloralGenerator.cpp" />
+    <ClCompile Include="Engine\Movement\Camera\FirstPerson.cpp" />
+    <ClCompile Include="Game\source.cpp" />
+    <ClCompile Include="Engine\Rendering\Shader.cpp" />
+    <ClCompile Include="Engine\Input\KeyboardInput.cpp" />
+    <ClCompile Include="Engine\Input\MouseInput.cpp" />
+    <ClCompile Include="Engine\Gameplay\World.cpp" />
+    <ClCompile Include="Engine\WorldCreation\World Generator\LandmassDesigner.cpp" />
+    <ClCompile Include="Libraries\GLAD\src\glad.c" />
+    <ClCompile Include="Libraries\SIMPLEX\SimplexNoise.cpp" />
+    <ClCompile Include="Engine\Gameplay\Player.cpp" />
+    <ClCompile Include="Engine\Rendering\Renderer.cpp" />
+    <ClCompile Include="Engine\BackEnd\Logging.cpp" />
+    <ClCompile Include="Engine\WorldCreation\Mesh Generator\Mesher.cpp" />
+    <ClCompile Include="Engine\WorldCreation\Fundamental Elements\WorldMap.cpp" />
+    <ClCompile Include="Engine\BackEnd\MemoryManager.cpp" />
+    <ClCompile Include="Engine\BackEnd\ThreadManager.cpp" />
+    <ClCompile Include="Engine\WorldCreation\World Generator\PlainsGenerator.cpp" />
+    <ClCompile Include="Engine\WorldCreation\World Generator\TerrainGenerator.cpp" />
+    <ClCompile Include="Engine\WorldCreation\World Generator\RiverGenerator.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Engine\WorldCreation\Fundamental Elements\AABB.h" />
+    <ClInclude Include="Engine\WorldCreation\Fundamental Elements\ContainedOctree.h" />
+    <ClInclude Include="Engine\WorldCreation\World Generator\BiomeDesigner.h" />
+    <ClInclude Include="Engine\WorldCreation\World Generator\DesertGenerator.h" />
+    <ClInclude Include="Engine\Rendering\BufferManager.h" />
+    <ClInclude Include="Engine\WorldCreation\Fundamental Elements\ChunkTree.h" />
+    <ClInclude Include="Engine\WorldCreation\Fundamental Elements\Blocks.h" />
+    <ClInclude Include="Engine\WorldCreation\World Generator\ChunkGenerator.h" />
+    <ClInclude Include="Engine\WorldCreation\Fundamental Elements\Block.h" />
+    <ClInclude Include="Engine\WorldCreation\Fundamental Elements\Chunk.h" />
+    <ClInclude Include="Engine\Rendering\Shader.h" />
+    <ClInclude Include="Engine\Input\KeyboardInput.h" />
+    <ClInclude Include="Engine\Input\MouseInput.h" />
+    <ClInclude Include="Engine\Gameplay\World.h" />
+    <ClInclude Include="Engine\Rendering\FrustumCulling.h" />
+    <ClInclude Include="Engine\BackEnd\ExceptionHandler.h" />
+    <ClInclude Include="Engine\WorldCreation\World Generator\ForestGenerator.h" />
+    <ClInclude Include="Engine\WorldCreation\World Generator\LandmassDesigner.h" />
+    <ClInclude Include="Engine\WorldCreation\World Generator\FloralGenerator.h" />
+    <ClInclude Include="Engine\Movement\Camera\FirstPerson.h" />
+    <ClInclude Include="Libraries\SIMPLEX\SimplexNoise.h" />
+    <ClInclude Include="Engine\Gameplay\Player.h" />
+    <ClInclude Include="Engine\Rendering\Renderer.h" />
+    <ClInclude Include="Engine\BackEnd\Logging.h" />
+    <ClInclude Include="Engine\WorldCreation\Mesh Generator\Mesher.h" />
+    <ClInclude Include="Engine\WorldCreation\Fundamental Elements\WorldMap.h" />
+    <ClInclude Include="Engine\BackEnd\MemoryManager.h" />
+    <ClInclude Include="Engine\BackEnd\ThreadManager.h" />
+    <ClInclude Include="Engine\WorldCreation\World Generator\PlainsGenerator.h" />
+    <ClInclude Include="Engine\WorldCreation\World Generator\TerrainGenerator.h" />
+    <ClInclude Include="Engine\WorldCreation\World Generator\RiverGenerator.h" />
+    <ClInclude Include="Engine\WorldCreation\Fundamental Elements\Octree.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shaders\Basic.shader" />
+    <None Include="Shaders\Instance.shader" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
