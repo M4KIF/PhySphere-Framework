@@ -99,7 +99,7 @@
     <ClCompile Include="Engine\Movement\Camera\FirstPerson.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\WorldCreation\Fundamental Elements\AABB.cpp">
+    <ClCompile Include="Engine\Collisions\AABB.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
   </ItemGroup>
@@ -197,7 +197,7 @@
     <ClInclude Include="Engine\WorldCreation\Fundamental Elements\ContainedOctree.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\WorldCreation\Fundamental Elements\AABB.h">
+    <ClInclude Include="Engine\Collisions\AABB.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
   </ItemGroup>

@@ -56,12 +56,21 @@ int main(void)
     * Game parameters and variables initialisation
     */
 
-    AABB bb(glm::vec3(0.0f), glm::vec3(16.0f));
+    Collisions::AABB bb(glm::vec3(0.0f), glm::vec3(16.0f));
 
-    Octree<int, 6> x(bb);
+    Octree::Octree<int, 5> x(bb);
 
-    AABB aa(glm::vec3(4.0f, 4.0f, 4.0f), glm::vec3(0.0f));
-    x.Insert(2, aa);
+    Collisions::AABB aa(glm::vec3(4.0f, 4.0f, 4.0f), glm::vec3(0.0f));
+    x.insert(2, aa);
+    for (int i = 0; i < 5000; i++)
+    {
+        auto rand_float = [](const float a, const float b)
+        {
+            return float(rand()) / (float)RAND_MAX * (b - a) + a;
+        };
+        Collisions::AABB var(glm::vec3(rand_float(1.0, 2.0)), glm::vec3(rand_float(1.0, 2.0)));
+        x.insert(rand(), var);
+    }
 
     // Game Loop itself
 
