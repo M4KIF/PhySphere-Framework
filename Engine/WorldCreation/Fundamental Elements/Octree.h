@@ -270,6 +270,18 @@ size_t Octree<T, MaxDepth>::CurrentDepth()
 	return m_Depth;
 }
 
+template<typename T, size_t MaxDepth> inline
+size_t Octree<T, MaxDepth>::MaximumDepth()
+{
+	return m_MaxDepth;
+}
+
+template<typename T, size_t MaxDepth> inline
+size_t Octree<T, MaxDepth>::CurrentDepth()
+{
+	return m_Depth;
+}
+
 // Modifying methods
 
 template<typename T, size_t MaxDepth>
