@@ -5,6 +5,7 @@
 // Default Libraries
 #include<list>
 #include<memory>
+#include<iostream>
 
 // Game files
 #include<Engine/WorldCreation/Fundamental Elements/AABB.h>
@@ -24,12 +25,12 @@
 
 
 
-template<typename T, size_t Depth>
+template<typename T, size_t MaxDepth>
 class Octree
 {
 	// Place for the Aliases
 
-	using OctantBoxes = std::vector<AABB>;
+	using OctantBoxes = std::array<AABB, 8>;
 
 	// Trick for storing the data about Octants
 
@@ -50,7 +51,7 @@ class Octree
 
 	// Private member methods
 
-	void CalculateOctantBounds(OctantBoxes& BoundingBox, Octants Octant, AABB ParentBoundingBox);
+	void CalculateOctantBounds(AABB& BoundingBox, Octants Octant);
 	
 	// Return true only if the Octants array has nullptrs in it
 
@@ -69,8 +70,8 @@ protected:
 
 	// Depth checking
 
-	size_t m_DepthAvailable = Depth;
-	size_t m_CurrentDepth;
+	size_t m_MaxDepth = MaxDepth;
+	size_t m_Depth = 0;
 
 	// A clever way of knowing whether the Octants are active
 	// if the value is shifted 8 times to the left, that means, that all of the octants have been set
@@ -83,7 +84,7 @@ protected:
 
 	// The Octants themselves, will be made with the use of a bounds calulating function
 
-	std::array<std::shared_ptr<Octree<T, (size_t)(Depth - 1)>>, 8> m_Octants;
+	std::array<std::shared_ptr<Octree<T, (size_t)(MaxDepth)>>, 8> m_Octants;
 
 	// The flag set
 
@@ -113,9 +114,13 @@ public:
 
 	Octree(AABB BoundingBox);
 
+	// For creating the internal nodes
+
+	Octree(AABB BoundingBox, size_t Depth);
+
 	// Sets up the tree completely with the data
 
-	Octree(AABB BoundingBox, std::list<std::shared_ptr<T>> Items);
+	Octree(AABB BoundingBox, size_t Depth, std::list<std::shared_ptr<T>> Items);
 
 	// Disposes the tree Recursively and displaces all the items that the tree references to
 
@@ -129,6 +134,8 @@ public:
 
 	void Empty();
 	void Size();
+	size_t MaximumDepth();
+	size_t CurrentDepth();
 
 	// Modifying methods
 
@@ -154,91 +161,124 @@ public:
 
 // Constructors
 
-template<typename T, size_t Depth>
-Octree<typename T, Depth>::Octree()
+template<typename T, size_t MaxDepth>
+Octree<T, MaxDepth>::Octree()
 {
-	// Default Constructor
+	//Default constructor
 }
 
-template<typename T, size_t Depth>
-Octree<typename T, Depth>::Octree(AABB BoundingBox) :
+template<typename T, size_t MaxDepth>
+Octree<T, MaxDepth>::Octree(AABB BoundingBox) :
 	m_Position(BoundingBox)
 {
 	// Sets the leaf flag accordingly
 
 	m_IsLeafNode = true;
+
+	// Proceeds to subdivision
+
+	Subdivide();
 }
 
-template<typename T, size_t Depth>
-Octree<typename T, Depth>::~Octree()
+template<typename T, size_t MaxDepth>
+Octree<T, MaxDepth>::Octree(AABB BoundingBox, size_t Depth) :
+	m_Position(BoundingBox), m_Depth(Depth)
+{
+	// Sets the leaf flag accordingly
+
+	m_IsLeafNode = true;
+	
+	// Sets the current level
+
+	m_Depth = Depth;
+
+	// Proceeds to subdivision
+
+	Subdivide();
+}
+
+template<typename T, size_t MaxDepth>
+Octree<T, MaxDepth>::~Octree()
 {
 	// Default
 }
 
 // Access Methods
 
-template<typename T, size_t Depth>
-bool Octree<T, Depth>::Search()
+template<typename T, size_t MaxDepth>
+bool Octree<T, MaxDepth>::Search()
 {
 
 }
 
-template<typename T, size_t Depth>
-void Octree<T, Depth>::Empty()
+template<typename T, size_t MaxDepth>
+void Octree<T, MaxDepth>::Empty()
 {
 
 }
 
-template<typename T, size_t Depth>
-void Octree<T, Depth>::Size()
+template<typename T, size_t MaxDepth>
+void Octree<T, MaxDepth>::Size()
 {
 
+}
+
+template<typename T, size_t MaxDepth> inline
+size_t Octree<T, MaxDepth>::MaximumDepth()
+{
+	return m_MaxDepth;
+}
+
+template<typename T, size_t MaxDepth> inline
+size_t Octree<T, MaxDepth>::CurrentDepth()
+{
+	return m_Depth;
 }
 
 // Modifying methods
 
-template<typename T, size_t Depth>
-void Octree<T, Depth>::Build()
+template<typename T, size_t MaxDepth>
+void Octree<T, MaxDepth>::Build()
 {
 
 }
 
-template<typename T, size_t Depth>
-void Octree<T, Depth>::Insert()
+template<typename T, size_t MaxDepth>
+void Octree<T, MaxDepth>::Insert()
 {
 
 }
 
-template<typename T, size_t Depth>
-void Octree<T, Depth>::Resize()
+template<typename T, size_t MaxDepth>
+void Octree<T, MaxDepth>::Resize()
 {
 
 }
 
-template<typename T, size_t Depth>
-void Octree<T, Depth>::Clear()
+template<typename T, size_t MaxDepth>
+void Octree<T, MaxDepth>::Clear()
 {
 
 }
 
 // Updating methods
 
-template<typename T, size_t Depth>
-void Octree<T, Depth>::Update()
+template<typename T, size_t MaxDepth>
+void Octree<T, MaxDepth>::Update()
 {
 
 }
 
-template<typename T, size_t Depth>
-void Octree<T, Depth>::ProccessPending()
+template<typename T, size_t MaxDepth>
+void Octree<T, MaxDepth>::ProccessPending()
 {
 
 }
 
 // Cleaning up
 
-template<typename T, size_t Depth>
-void Octree<T, Depth>::Destroy()
+template<typename T, size_t MaxDepth>
+void Octree<T, MaxDepth>::Destroy()
 {
 
 }
@@ -247,10 +287,10 @@ void Octree<T, Depth>::Destroy()
 // Private member functions
 //
 
-template<typename T, size_t Depth>
-void Octree<T, Depth>::CalculateOctantBounds(OctantBoxes& BoundingBox, Octants Octant, AABB ParentBoundingBox)
+template<typename T, size_t MaxDepth>
+void Octree<T, MaxDepth>::CalculateOctantBounds(AABB& BoundingBox, Octants Octant)
 {
-	glm::vec3 Center;
+	glm::vec3 Center = m_Position.Center();
 
 	// Calculating the 8 different boudning boxes for the Octants
 
@@ -301,35 +341,59 @@ void Octree<T, Depth>::CalculateOctantBounds(OctantBoxes& BoundingBox, Octants O
 	}
 }
 
-template<typename T, size_t Depth>
-bool Octree<T, Depth>::IsLeafNode(void)
+template<typename T, size_t MaxDepth>
+bool Octree<T, MaxDepth>::IsLeafNode(void)
 {
 	// If the first element is equal to null,
 	// then the rest cannot exist either
 
-	if (m_Octants[0] == nullptr) return true;
-	else return false;
+	return m_IsLeafNode;
 }
 
-template<typename T, size_t Depth>
-bool Octree<T, Depth>::Subdivide(void)
+template<typename T, size_t MaxDepth>
+bool Octree<T, MaxDepth>::Subdivide(void)
 {
-	// It starts with checking if it stands in the leaf node 
+	// It starts with checking if this tree can be subdivided
 
-	if (!IsLeafNode()) return false;
+	if (!IsLeafNode())
+	{
+		return false;
+	}
+	else if (m_Depth+1 == m_MaxDepth)
+	{
+		return false;
+	}
 
-	// Then proceeds to checking a bit more details
+	// Calculating the needed dimensions
 
 	glm::vec3 Dimensions = m_Position.Dimensions();
 
-	for (int i = 0; i < 3; i++)
+	// TODO: This safetycheck doesnt work at all
+
+	//for (int i = 0; i < 3; i++)
+	//{
+	//	std::cout << "Hey!\n";
+	//	if (Dimensions[i] < MINIMUM_BOUNDING_SIZE) return false;
+	//}
+
+	// Creating the coordinates of the Octants, I am using a clever little technique,
+	// by shifting bit-wise a number one, I achieve the needed enum class members values,
+	// that allows to correctly recognize Octants based on their hex code.
+
+	for (int i = 0; i < NUMBER_OF_OCTANTS; i++)
 	{
-		if (Dimensions[i] < MINIMUM_BOUNDING_SIZE) return false;
+		CalculateOctantBounds(m_OctantsBounds[i], static_cast<Octants>(1<<i));
+		std::cout << "Hey!\n";
 	}
 
-	// Creating the coordinates of the Octants
+	// Creating the Octants themselves
 
-	for(int i = 0 )
+	m_IsLeafNode = false;
 
+	for (int i = 0; i < NUMBER_OF_OCTANTS; i++)
+	{
+		m_Octants[i] = std::make_shared<Octree<T, MaxDepth>>(m_OctantsBounds[i], m_Depth+1);
+		std::cout << m_Octants[i] << ": Adres!\n";
+	}
 }
 
