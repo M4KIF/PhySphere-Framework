@@ -5,6 +5,7 @@
 #include<glfw3native.h>
 
 // Default Libraries
+#include<iostream>
 #include<typeinfo>
 
 // Game Files
@@ -55,9 +56,12 @@ int main(void)
     * Game parameters and variables initialisation
     */
 
-    AABB bb(glm::vec3(0.0f), glm::vec3(1.0f));
+    AABB bb(glm::vec3(0.0f), glm::vec3(16.0f));
 
-    Octree<int, 3> x(bb);
+    Octree<int, 6> x(bb);
+
+    AABB aa(glm::vec3(4.0f, 4.0f, 4.0f), glm::vec3(0.0f));
+    x.Insert(2, aa);
 
     // Game Loop itself
 

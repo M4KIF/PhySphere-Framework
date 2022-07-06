@@ -63,13 +63,13 @@ std::array<glm::vec3, 2> AABB::BoundingRegion()
 
 glm::vec3 AABB::Dimensions()
 {
-    glm::vec3 Dimensions;
+    glm::vec3 dimensions = glm::vec3();
 
-    Dimensions.x = m_MinMax[0].x - m_MinMax[1].x;
-    Dimensions.y = m_MinMax[1].y - m_MinMax[0].y;
-    Dimensions.z = m_MinMax[1].z - m_MinMax[0].z;
+    dimensions.x = std::fabs(m_MinMax[0].x - m_MinMax[1].x);
+    dimensions.y = std::fabs(m_MinMax[1].y - m_MinMax[0].y);
+    dimensions.z = std::fabs(m_MinMax[0].z - m_MinMax[1].z);
 
-    return Dimensions;
+    return dimensions;
 }
 
 bool AABB::Collides(AABB& compared)

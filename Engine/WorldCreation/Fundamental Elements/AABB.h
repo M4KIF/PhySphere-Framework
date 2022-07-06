@@ -68,7 +68,8 @@ public:
 	// Comparsion 
 
 	bool Collides(AABB& compared);
-	bool Contains(AABB& compared);
+	bool Contains(AABB& compared); //Contains the whole object
+	bool Overlaps(AABB& comapred); //Contains either a part, or the whole object
 
 	// Updating 
 

@@ -1,40 +1,45 @@
 #pragma once
 
-// Custom Libraries
+//Custom Libraries
 
-// Default Libraries
+//Default Libraries
 #include<list>
 #include<memory>
+#include<iostream>
 
-// Game files
+//Game files
 #include<Engine/WorldCreation/Fundamental Elements/AABB.h>
 
 //Macros
 
-#define MINIMUM_BOUNDING_SIZE 1.0f
+#define MINIMUM_DIMENSION 1.0f
 #define NUMBER_OF_OCTANTS 8
 
-//
-// This Octree implementation is intended to be used both as 
-// the main blocks container and also as a main chunk container,
-// both with different maximum levels variable. Also before that, It
-// will be wrapped to use in conjunction with a list container that will
-// store the content of the Tree itself
-//
 
+/*
+* This Octree implementation is intended to be used both as 
+* the main blocks container and also as a main chunk container,
+* both with different maximum levels variable. Also before that, It
+* will be wrapped to use in conjunction with a list container that will
+* store the content of the Tree itself.
+* 
+* Made with the help of:
+* javidx9: https://www.youtube.com/watch?v=ASAowY6yJII&t=1156s
+* World of Zero: https://www.youtube.com/watch?v=m0guE7804to
+* 
+*/
 
-
-template<typename T, size_t Depth>
+template<typename T, size_t MaxDepth>
 class Octree
 {
-	// Place for the Aliases
+	//Place for the Aliases
 
-	using OctantBoxes = std::vector<AABB>;
+	using OctantBoxes = std::array<AABB, 8>;
 
-	// Trick for storing the data about Octants
+	//Trick for storing the data about Octants
 
 	enum class Octants : unsigned char {
-		// The values below translate to hex values as follows
+		//The values below translate to hex values as follows
 
 		O1 = 0x01, // = 0b00000001 -> 1 << 1
 		O2 = 0x02, // = 0b00000010 -> 1 << 2
@@ -45,20 +50,26 @@ class Octree
 		O7 = 0x40, // = 0b01000000 -> 1 << 7
 		O8 = 0x80  // = 0b10000000 -> 1 << 8
 
-		// When all children are active this should be equal to 0b11111111
+		//When all children are active this should be equal to 0b11111111
 	};
 
-	// Private member methods
+	//Private member methods
 
-	void CalculateOctantBounds(OctantBoxes& BoundingBox, Octants Octant, AABB ParentBoundingBox);
+	void CalculateOctantBounds(AABB& BoundingBox, Octants Octant);
 	
-	// Return true only if the Octants array has nullptrs in it
+	//Return true only if the Octants array has nullptrs in it
 
 	bool IsLeafNode(void);
 
-	// Recursively comes down till the depth reaches maximum
+	//Recursively comes down till the depth reaches maximum
 
 	bool Subdivide(void);
+
+	//Recursive search function
+	void search(const AABB& area, std::list<typename T>& items);
+
+	//Pushes all of the items from the node
+	void Items(std::list<typename T>& items);
 
 
 protected:
@@ -69,8 +80,8 @@ protected:
 
 	// Depth checking
 
-	size_t m_DepthAvailable = Depth;
-	size_t m_CurrentDepth;
+	const size_t m_MaxDepth = MaxDepth;
+	size_t m_Depth = 0;
 
 	// A clever way of knowing whether the Octants are active
 	// if the value is shifted 8 times to the left, that means, that all of the octants have been set
@@ -83,7 +94,7 @@ protected:
 
 	// The Octants themselves, will be made with the use of a bounds calulating function
 
-	std::array<std::shared_ptr<Octree<T, (size_t)(Depth - 1)>>, 8> m_Octants;
+	std::array<std::shared_ptr<Octree<T, (size_t)(MaxDepth)>>, 8> m_Octants;
 
 	// The flag set
 
@@ -95,11 +106,7 @@ protected:
 
 	// A pointer to the element that the node will be storing
 
-	std::list<std::shared_ptr<T>> m_Item;
-
-	// A queue for filling the data to the tree
-
-	std::list<std::shared_ptr<T>> m_Queue;
+	std::list<std::shared_ptr<T>> m_Items;
 
 public:
 
@@ -113,9 +120,13 @@ public:
 
 	Octree(AABB BoundingBox);
 
+	// For creating the internal nodes
+
+	Octree(AABB BoundingBox, size_t Depth);
+
 	// Sets up the tree completely with the data
 
-	Octree(AABB BoundingBox, std::list<std::shared_ptr<T>> Items);
+	Octree(AABB BoundingBox, size_t Depth, std::list<std::shared_ptr<T>> Items);
 
 	// Disposes the tree Recursively and displaces all the items that the tree references to
 
@@ -123,18 +134,21 @@ public:
 
 	// Access methods
 
-	bool Search();
+	std::list<T> Search(const AABB& area);
+	bool Contains(const AABB& area);
 
 	// Capacity
 
 	void Empty();
-	void Size();
+	size_t Size();
+	size_t MaximumDepth();
+	size_t CurrentDepth();
 
 	// Modifying methods
 
-	void Build();
-	void Insert();
-	void Resize();
+	bool Build();
+	void Insert(T object, AABB area);
+	void Resize(glm::vec3 minimum, glm::vec3 maximum);
 	void Clear();
 
 	// Updating methods
@@ -154,91 +168,217 @@ public:
 
 // Constructors
 
-template<typename T, size_t Depth>
-Octree<typename T, Depth>::Octree()
+template<typename T, size_t MaxDepth>
+Octree<T, MaxDepth>::Octree()
 {
-	// Default Constructor
+	// Does nothing, because the Octree doesn't have the bounding space defined
 }
 
-template<typename T, size_t Depth>
-Octree<typename T, Depth>::Octree(AABB BoundingBox) :
+template<typename T, size_t MaxDepth>
+Octree<T, MaxDepth>::Octree(AABB BoundingBox) :
 	m_Position(BoundingBox)
 {
-	// Sets the leaf flag accordingly
+	// Every octree starts as a leaf node before any subdivisions
 
 	m_IsLeafNode = true;
+
+	// Proceeds to subdivision
+
+	Subdivide();
 }
 
-template<typename T, size_t Depth>
-Octree<typename T, Depth>::~Octree()
+template<typename T, size_t MaxDepth>
+Octree<T, MaxDepth>::Octree(AABB BoundingBox, size_t Depth) :
+	m_Position(BoundingBox), m_Depth(Depth)
 {
-	// Default
+	// Every octree starts as a leaf node before any subdivisions
+
+	m_IsLeafNode = true;
+	
+	// Sets the current level
+
+	m_Depth = Depth;
+
+	// Proceeds to subdivision
+
+	Subdivide();
 }
 
-// Access Methods
+template<typename T, size_t MaxDepth>
+Octree<T, MaxDepth>::~Octree()
+{
+	//Default
+}
 
-template<typename T, size_t Depth>
-bool Octree<T, Depth>::Search()
+//Access Methods
+
+template<typename T, size_t MaxDepth>
+std::list<T> Octree<T, MaxDepth>::Search(const AABB &area)
+{
+	/*
+	* Returns a list of items that can be found in the
+	* specified area of the tree. This number can be in fact quite large
+	*/
+
+	std::list<T> items;
+	
+	//This can go deep into the recursion
+	search(area, items);
+
+	return items;
+
+}
+
+template<typename T, size_t MaxDepth>
+bool Octree<T, MaxDepth>::Contains(const AABB& area)
+{
+	return m_Position.Contains(area);
+}
+
+template<typename T, size_t MaxDepth>
+void Octree<T, MaxDepth>::Empty()
 {
 
 }
 
-template<typename T, size_t Depth>
-void Octree<T, Depth>::Empty()
+template<typename T, size_t MaxDepth>
+size_t Octree<T, MaxDepth>::Size()
 {
 
+	size_t count = m_Items.size();
+
+	for (int i = 0; i < NUMBER_OF_OCTANTS; i++)
+	{
+		if (m_Octants[i])
+		{
+			count += m_Octants[i]->size();
+		}
+	}
+
+	return count;
 }
 
-template<typename T, size_t Depth>
-void Octree<T, Depth>::Size()
+template<typename T, size_t MaxDepth> inline
+size_t Octree<T, MaxDepth>::MaximumDepth()
 {
+	return m_MaxDepth;
+}
 
+template<typename T, size_t MaxDepth> inline
+size_t Octree<T, MaxDepth>::CurrentDepth()
+{
+	return m_Depth;
 }
 
 // Modifying methods
 
-template<typename T, size_t Depth>
-void Octree<T, Depth>::Build()
+template<typename T, size_t MaxDepth>
+bool Octree<T, MaxDepth>::Build()
 {
 
 }
 
-template<typename T, size_t Depth>
-void Octree<T, Depth>::Insert()
+template<typename T, size_t MaxDepth>
+void Octree<T, MaxDepth>::Insert(T object, AABB area)
 {
+	// Checking whether anything can be inserted
+	if (!m_TreeBuilt)
+	{
+		return;
+	}
 
+	// Checking whether the children can contain the item
+	for (int i = 0; i < NUMBER_OF_OCTANTS; i++)
+	{
+		if (m_Octants[i]->Contains(area))
+		{
+			// Within the depth limit?
+			if (m_Depth + 1 < m_MaxDepth)
+			{
+				//If no, does the child exist?
+				if (!m_Octants[i])
+				{
+					//If no, create that child
+					m_Octants[i] = std::make_shared<Octree<T, MaxDepth>>(m_OctantsBounds[i], m_Depth + 1);
+
+				}
+
+				//If yes, proceed to the insertion
+				m_Octants[i]->Insert(object, area);
+
+				return;
+			}
+		}	
+
+	}
+
+	//It must be somewhere in the tree, so
+	m_Items.push_back(std::make_shared<object>);
 }
 
-template<typename T, size_t Depth>
-void Octree<T, Depth>::Resize()
+template<typename T, size_t MaxDepth>
+void Octree<T, MaxDepth>::Resize(glm::vec3 minimum, glm::vec3 maximum)
 {
+	// Resizing invalids the whole tree
 
+	Clear();
+
+	// Actual resizing of the structure
+
+	m_Position.Update(minimum, maximum);
+
+	// Calcaulating the potential children coordinates
+
+	for (int i = 0; i < NUMBER_OF_OCTANTS; i++)
+	{
+		CalculateOctantBounds(m_OctantsBounds[i], static_cast<Octants>(1 << i));
+	}
 }
 
-template<typename T, size_t Depth>
-void Octree<T, Depth>::Clear()
+template<typename T, size_t MaxDepth>
+void Octree<T, MaxDepth>::Clear()
 {
+	// Clearing the containers that the current node stores
 
+	m_Items.clear();
+
+	// Proceeding to the Octants
+
+	for (int i = 0; i < NUMBER_OF_OCTANTS; i++)
+	{
+
+		if (m_Octants[i])
+		{
+			// Recursively cleaning
+
+			m_Octants[i]->clear();
+
+			// Resetting the shared_ptr -> deleting the child
+
+			m_Octants[i]->reset();
+		}
+		
+	}
 }
 
 // Updating methods
 
-template<typename T, size_t Depth>
-void Octree<T, Depth>::Update()
+template<typename T, size_t MaxDepth>
+void Octree<T, MaxDepth>::Update()
 {
 
 }
 
-template<typename T, size_t Depth>
-void Octree<T, Depth>::ProccessPending()
+template<typename T, size_t MaxDepth>
+void Octree<T, MaxDepth>::ProccessPending()
 {
 
 }
 
 // Cleaning up
 
-template<typename T, size_t Depth>
-void Octree<T, Depth>::Destroy()
+template<typename T, size_t MaxDepth>
+void Octree<T, MaxDepth>::Destroy()
 {
 
 }
@@ -247,89 +387,260 @@ void Octree<T, Depth>::Destroy()
 // Private member functions
 //
 
-template<typename T, size_t Depth>
-void Octree<T, Depth>::CalculateOctantBounds(OctantBoxes& BoundingBox, Octants Octant, AABB ParentBoundingBox)
+template<typename T, size_t MaxDepth>
+void Octree<T, MaxDepth>::CalculateOctantBounds(AABB& BoundingBox, Octants Octant)
 {
-	glm::vec3 Center;
+	// Here is the center of the parent node Octree
+
+	glm::vec3 center = m_Position.Center();
+
+	// And It's side length for all dimensions
+
+	glm::vec3 dimensions = m_Position.Dimensions();
+
+	// Variables for storing the min and max valus
+
+	glm::vec3 minimum;
+	glm::vec3 maximum;
 
 	// Calculating the 8 different boudning boxes for the Octants
 
 	if (Octant == Octants::O1)
 	{
+		// The minimum coordinate of the bounding box
+
+		minimum = center;
+
+		// The maximum coordinate of the bounding box
+
+		maximum = glm::vec3((center[0] - 0.5 * dimensions[0]), (center[1] + 0.5 * dimensions[1]), (center[2] - 0.5 * dimensions[2]));
+
+		// Updating the given bounding box
+
+		BoundingBox.Update(minimum, maximum);
 
 		return;
 	}
 	else if (Octant == Octants::O2)
-	{
+	{	
+		// The minimum coordinate of the bounding box
 
-		return;
-	}
-	else if (Octant == Octants::O2)
-	{
+		minimum = glm::vec3((center[0] + 0.5 * dimensions[0]), center[1], center[2]);
+
+		// The maximum coordinate of the bounding box
+
+		maximum = glm::vec3(center[0], (center[1] + 0.5 * dimensions[1]), (center[2] - 0.5 * dimensions[2]));
+
+		// Updating the given bounding box
+
+		BoundingBox.Update(minimum, maximum);
 
 		return;
 	}
 	else if (Octant == Octants::O3)
 	{
+		// The minimum coordinate of the bounding box
+
+		minimum = glm::vec3(center[0], center[1], (center[2] + 0.5 * dimensions[2]));
+
+		// The maximum coordinate of the bounding box
+
+		maximum = glm::vec3((center[0] - 0.5 * dimensions[0]), (center[1] + 0.5 * dimensions[1]), center[2]);
+
+		// Updating the given bounding box
+
+		BoundingBox.Update(minimum, maximum);
 
 		return;
 	}
 	else if (Octant == Octants::O4)
 	{
+		// The minimum coordinate of the bounding box
+
+		minimum = glm::vec3((center[0]+ 0.5 * dimensions[0]), center[1], (center[2] + 0.5 * dimensions[2]));
+
+		// The maximum coordinate of the bounding box
+
+		maximum = glm::vec3(center[0], (center[1] + 0.5 * dimensions[1]), center[2]);
+
+		// Updating the given bounding box
+
+		BoundingBox.Update(minimum, maximum);
 
 		return;
 	}
 	else if (Octant == Octants::O5)
 	{
+		// The minimum coordinate of the bounding box
+
+		minimum = glm::vec3(center[0], (center[1]-0.5*dimensions[1]), center[2]);
+
+		// The maximum coordinate of the bounding box
+
+		maximum = glm::vec3((center[0] - 0.5 * dimensions[0]), center[1], (center[2] - 0.5 * dimensions[2]));
+
+		// Updating the given bounding box
+
+		BoundingBox.Update(minimum, maximum);
 
 		return;
 	}
 	else if (Octant == Octants::O6)
 	{
+		// The minimum coordinate of the bounding box
+
+		minimum = glm::vec3((center[0] + 0.5 * dimensions[0]), (center[1] - 0.5 * dimensions[1]), center[2]);
+
+		// The maximum coordinate of the bounding box
+
+		maximum = glm::vec3(center[0], center[1], (center[2] - 0.5 * dimensions[2]));
+
+		// Updating the given bounding box
+
+		BoundingBox.Update(minimum, maximum);
 
 		return;
 	}
 	else if (Octant == Octants::O7)
 	{
+		// The minimum coordinate of the bounding box
+
+		minimum = glm::vec3(center[0], (center[1] - 0.5 * dimensions[1]), (center[2] + 0.5 * dimensions[2]));
+
+		// The maximum coordinate of the bounding box
+
+		maximum = glm::vec3((center[0] - 0.5 * dimensions[0]), center[1], center[2]);
+
+		// Updating the given bounding box
+
+		BoundingBox.Update(minimum, maximum);
 
 		return;
 	}
 	else if (Octant == Octants::O8)
 	{
+		// The minimum coordinate of the bounding box
+
+		minimum = glm::vec3((center[0] + 0.5 * dimensions[0]), (center[1] - 0.5 * dimensions[1]), (center[2] + 0.5 * dimensions[2]));
+
+		// The maximum coordinate of the bounding box
+
+		maximum = glm::vec3(center[0], center[1], center[2]);
+
+		// Updating the given bounding box
+
+		BoundingBox.Update(minimum, maximum);
 
 		return;
 	}
 }
 
-template<typename T, size_t Depth>
-bool Octree<T, Depth>::IsLeafNode(void)
+template<typename T, size_t MaxDepth>
+bool Octree<T, MaxDepth>::IsLeafNode(void)
 {
-	// If the first element is equal to null,
-	// then the rest cannot exist either
-
-	if (m_Octants[0] == nullptr) return true;
-	else return false;
+	return m_IsLeafNode;
 }
 
-template<typename T, size_t Depth>
-bool Octree<T, Depth>::Subdivide(void)
+template<typename T, size_t MaxDepth>
+bool Octree<T, MaxDepth>::Subdivide(void)
 {
-	// It starts with checking if it stands in the leaf node 
+	/*
+	* Checking exit conditions
+	*/
 
-	if (!IsLeafNode()) return false;
+	// If is a leaf node or the maximum depth has beed aproached
 
-	// Then proceeds to checking a bit more details
+	if (!IsLeafNode())
+	{
+		return false;
+	}
+	else if (m_Depth+1 == m_MaxDepth)
+	{
+		// The tree is ready to be filled with data
 
-	glm::vec3 Dimensions = m_Position.Dimensions();
+		m_TreeBuilt = true;
+
+		return false;
+	}
+
+	/*
+	*  Calculating the needed dimensions
+	*/
+
+	glm::vec3 dimensions = m_Position.Dimensions();
+
+	// Safety checking the dimensions so the tree will eventually stop growing
 
 	for (int i = 0; i < 3; i++)
 	{
-		if (Dimensions[i] < MINIMUM_BOUNDING_SIZE) return false;
+		if (dimensions[i] < MINIMUM_DIMENSION) return false;
 	}
 
-	// Creating the coordinates of the Octants
+	std::cout << "Dimensions are: " << dimensions[0] << ", " << dimensions[1] << ", " << dimensions[2] << "\n";
 
-	for(int i = 0 )
+	/*
+	* Creating the coordinates of the Octants, I am using a clever little technique,
+	* by shifting bit-wise a number one, I achieve the needed enum class members values,
+	* that allows to correctly recognize Octants based on their hex code.
+	*/
 
+	for (int i = 0; i < NUMBER_OF_OCTANTS; i++)
+	{
+		CalculateOctantBounds(m_OctantsBounds[i], static_cast<Octants>(1<<i));
+	}
+
+	// Creating the Octants themselves
+
+	m_IsLeafNode = false;
+
+	for (int i = 0; i < NUMBER_OF_OCTANTS; i++)
+	{
+		m_Octants[i] = std::make_shared<Octree<T, MaxDepth>>(m_OctantsBounds[i], m_Depth+1);
+	}
 }
 
+template<typename T, size_t MaxDepth>
+void Octree<T, MaxDepth>::search(const AABB& area, std::list<typename T>& items)
+{
+	//TODO: Nie do koñca rozumiem ten moment. 
+
+	//Checking the parent node for the items
+	if (area->Overlaps(m_Position))
+	{
+		for (const auto& p : m_Items)
+		{
+			items.push_back(p);
+		}
+	}
+
+	//Checking the child nodes
+	for (int i = 0; i < NUMBER_OF_OCTANTS; i++)
+	{
+		if (m_Octants[i])
+		{
+			
+			//Checking whether the area contains this child in it
+			if (area.Contains(m_OctantsBounds[i]))
+			{
+				//If so, then I can take all of the content of the nex children
+				m_Octants[i]->Items(items);
+			}
+
+			//Checking for overlapping
+			else if (m_OctantsBounds[i].Overlaps(area))
+			{
+				m_Octants[i]->search(area, items);
+			}
+		}
+	}
+}
+
+template<typename T, size_t MaxDepth>
+void Octree<T, MaxDepth>::Items(std::list<typename T>& items)
+{
+	for (const auto& p : m_Items)
+		items.push_back(p);
+
+	for (int i = 0; i < NUMBER_OF_OCTANTS; i++)
+		if (m_Octants[i]) m_Octants[i]->Items(items);
+}
