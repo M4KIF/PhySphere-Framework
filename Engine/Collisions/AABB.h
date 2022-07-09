@@ -23,8 +23,10 @@ namespace Collisions {
 	protected:
 
 		// Contains the center of the box as of seen from the top
-
 		glm::vec3 m_Center;
+
+		//Contains all side lengths
+		glm::vec3 m_Dimensions;
 
 		// How does the Min and Max work in an AABB
 		//	  0 ----- MAX
@@ -36,46 +38,49 @@ namespace Collisions {
 		//	MIN ---- 7
 
 		// These variable contain the MIN/MAX values of the box
-
 		BoxCoordinates m_MinMax{};
 
 		// Flags
-
 		bool m_CenterUpdated = false;
+		bool m_DimensionsUpdated = false;
 
 	public:
 
-		// Initialisation
+		/*
+		* Initialisation
+		*/
 
 		AABB();
 
 		// Sets up a valid bounding box for further use
-
-		AABB(glm::vec3 UpperTopLeft, glm::vec3 LowerBottomRight);
+		AABB(glm::vec3 Minimum, glm::vec3 Maximum);
 
 		// Copyies the Box
-
 		AABB(AABB& Copy);
 
 		// Disposes the bounding box
-
 		~AABB();
 
-		// Access
+		/*
+		* Element access
+		*/
 
 		glm::vec3 center(void);
 		BoxCoordinates bounding_region();
 		glm::vec3 dimensions();
 
-		// Comparsion 
+		/*
+		* Element access
+		*/
 
-		bool collides(const AABB& compared);
-		bool contains(const AABB& compared); //Contains the whole object
-		bool overlaps(const AABB& comapred); //Contains either a part, or the whole object
+		bool contains(AABB& compared); //Contains the whole object
+		bool contains(glm::vec3 compared);
+		bool intersect1(AABB& comapred); //Contains either a part, or the whole object
+		bool intersect2(AABB& comapred);
 
 		// Updating 
 
-		void update(glm::vec3 Minimum, glm::vec3 Maximum);
+		void update_position(glm::vec3 Minimum, glm::vec3 Maximum);
 	};
 
 }
