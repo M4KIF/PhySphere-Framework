@@ -4,6 +4,7 @@
 
 //Default Libraries
 #include<list>
+#include<queue>
 #include<memory>
 #include<iostream>
 
@@ -37,7 +38,7 @@ enum class Direction :unsigned char {
 
 namespace Octree {
 
-	template<typename T, typename Y, size_t MaxDepth>
+	template<typename T, typename Y>
 	class Octree
 	{
 		/*
@@ -69,7 +70,7 @@ namespace Octree {
 
 		//Set of minimal recursive functions that just do their tasks, without tree safety
 		void recursive_subdivide(void); //OK
-		void recursive_search(Collisions::AABB& area, std::list<std::pair<T, Y>>& items); //OK
+		void recursive_dfs(Collisions::AABB& area, std::list<std::pair<T, Y>>& items); //OK
 		void recursive_insert(std::pair<T, Y> object, Collisions::AABB area); //OK
 		void recursive_resize(glm::vec3 minimum, glm::vec3 maximum); //OK
 
@@ -80,7 +81,7 @@ namespace Octree {
 		Collisions::AABB m_Position;
 
 		// Depth checking
-		const size_t m_MaxDepth = MaxDepth;
+		size_t m_MaxDepth;
 		size_t m_Depth = 0;
 
 		// A clever way of knowing whether the Octants are active
@@ -91,7 +92,7 @@ namespace Octree {
 		OctantBoxes m_OctantsBounds;
 
 		// The Octants themselves, will be made with the use of a bounds calulating function
-		std::array<std::shared_ptr<Octree<T, Y, (size_t)(MaxDepth)>>, 8> m_Octants;
+		std::array<std::shared_ptr<Octree<T, Y>>, 8> m_Octants;
 
 		// The flag set
 		bool m_IsLeaf = false;
@@ -108,8 +109,8 @@ namespace Octree {
 		*/
 
 		Octree();
-		Octree(Collisions::AABB BoundingBox);
-		Octree(Collisions::AABB BoundingBox, size_t Depth);
+		Octree(Collisions::AABB BoundingBox, size_t MaxDepth);
+		Octree(Collisions::AABB BoundingBox, size_t MaxDepth, size_t Depth);
 		Octree(Collisions::AABB BoundingBox, size_t Depth, std::list<std::shared_ptr<T>> Items);
 		~Octree();
 
@@ -118,6 +119,8 @@ namespace Octree {
 		*/
 
 		std::array<glm::vec3, 2> position();
+		Collisions::AABB& aabb();
+		OctantBoxes octants_positions();
 		size_t size(); //OK
 		size_t max_size(); //OK
 		size_t depth(); //OK
@@ -129,9 +132,11 @@ namespace Octree {
 		* Element access
 		*/
 
-		std::list<std::pair<T, Y>> search(Collisions::AABB& area); //OK
-		std::list<std::pair<T, Y>> dfs(Collisions::AABB& area); //TODO
+		void dfs(Collisions::AABB& area, std::list<std::pair<T, Y>>& items); //TODO
+		void bfs(Collisions::AABB& area, std::list<std::pair<T, Y>>& items); //TODO
 		bool contains(Collisions::AABB& area); //OK
+		std::pair<T, Y> access_element();
+		std::array<std::shared_ptr<Octree<T, Y>>, 8>& access_octants();
 
 
 		/*
@@ -160,54 +165,53 @@ namespace Octree {
 
 
 	//Defatult Constructor
-	template<typename T, typename Y, size_t MaxDepth>
-	Octree<T, Y, MaxDepth>::Octree()
+	template<typename T, typename Y>
+	Octree<T, Y>::Octree()
 	{
 		// Does nothing, because the Octree doesn't have the bounding space defined
 	}
 
 
 	//Area setting constructor, should be always first
-	template<typename T, typename Y, size_t MaxDepth>
-	Octree<T, Y, MaxDepth>::Octree(Collisions::AABB BoundingBox) :
+	template<typename T, typename Y>
+	Octree<T, Y>::Octree(Collisions::AABB BoundingBox, size_t MaxDepth) :
 		m_Position(BoundingBox)
 	{
+		//Setting max depth available for the Tree
+		m_MaxDepth = MaxDepth;
+		
 		// Every octree starts as a leaf node before any subdivisions
-
 		m_IsLeaf = true;
 		m_NodeReady = true;
 		m_ContainsItem = false;
 
 		// Proceeds to subdivision
-
 		recursive_subdivide();
 	}
 
 
 	//Area setting constructor, that takes a depth param, used in subdivision
-	template<typename T, typename Y, size_t MaxDepth>
-	Octree<T, Y, MaxDepth>::Octree(Collisions::AABB BoundingBox, size_t Depth) :
+	template<typename T, typename Y>
+	Octree<T, Y>::Octree(Collisions::AABB BoundingBox, size_t MaxDepth, size_t Depth) :
 		m_Position(BoundingBox), m_Depth(Depth)
 	{
 		// Every octree starts as a leaf node before any subdivisions
-
 		m_IsLeaf = true;
 		m_NodeReady = true;
 		m_ContainsItem = false;
 
 		// Sets the current level
-
 		m_Depth = Depth;
+		m_MaxDepth = MaxDepth;
 
 		// Proceeds to subdivision
-
 		recursive_subdivide();
 	}
 
 
 	//
-	template<typename T, typename Y, size_t MaxDepth>
-	Octree<T, Y, MaxDepth>::~Octree()
+	template<typename T, typename Y>
+	Octree<T, Y>::~Octree()
 	{
 		//Default
 	}
@@ -221,15 +225,29 @@ namespace Octree {
 
 
 
-	template<typename T, typename Y, size_t MaxDepth>
-	std::array<glm::vec3, 2> Octree<T, Y, MaxDepth>::position()
+	template<typename T, typename Y>
+	std::array<glm::vec3, 2> Octree<T, Y>::position()
 	{
 		return m_Position.bounding_region();
 	}
 
 
-	template<typename T, typename Y, size_t MaxDepth>
-	size_t Octree<T, Y, MaxDepth>::size()
+	template<typename T, typename Y>
+	Collisions::AABB& Octree<T, Y>::aabb()
+	{
+		return m_Position;
+	}
+
+
+	template<typename T, typename Y>
+	std::array<Collisions::AABB, 8> Octree<T, Y>::octants_positions()
+	{
+		return m_OctantsBounds;
+	}
+
+
+	template<typename T, typename Y>
+	size_t Octree<T, Y>::size()
 	{
 		size_t count = 0;
 
@@ -253,30 +271,30 @@ namespace Octree {
 	}
 
 
-	template<typename T, typename Y, size_t MaxDepth>
-	size_t Octree<T, Y, MaxDepth>::max_size()
+	template<typename T, typename Y>
+	size_t Octree<T, Y>::max_size()
 	{
 		//Returns a theoretical maximum size, which equals to the maximum possible nodes
 		return std::pow(NUMBER_OF_OCTANTS, m_MaxDepth);
 	}
 
 
-	template<typename T, typename Y, size_t MaxDepth> inline
-		size_t Octree<T, Y, MaxDepth>::depth()
+	template<typename T, typename Y> inline
+		size_t Octree<T, Y>::depth()
 	{
 		return m_Depth;
 	}
 
 
-	template<typename T, typename Y, size_t MaxDepth> inline
-		size_t Octree<T, Y, MaxDepth>::max_depth()
+	template<typename T, typename Y> inline
+		size_t Octree<T, Y>::max_depth()
 	{
 		return m_MaxDepth;
 	}
 
 
-	template<typename T, typename Y, size_t MaxDepth>
-	void Octree<T, Y, MaxDepth>::resize(glm::vec3 minimum, glm::vec3 maximum)
+	template<typename T, typename Y>
+	void Octree<T, Y>::resize(glm::vec3 minimum, glm::vec3 maximum)
 	{
 		// Resizing invalids the whole tree
 		clear();
@@ -286,8 +304,8 @@ namespace Octree {
 	}
 
 
-	template<typename T, typename Y, size_t MaxDepth>
-	bool Octree<T, Y, MaxDepth>::empty()
+	template<typename T, typename Y>
+	bool Octree<T, Y>::empty()
 	{
 		//If there are no Octants in the root node, then the tree is empty
 		if (!m_Octants[0]) return true;
@@ -303,41 +321,137 @@ namespace Octree {
 
 
 	//Searches for a given area inside the tree
-	template<typename T, typename Y, size_t MaxDepth>
-	std::list<std::pair<T, Y>> Octree<T, Y, MaxDepth>::search(Collisions::AABB& area)
+	template<typename T, typename Y>
+	void Octree<T, Y>::dfs(Collisions::AABB& area, std::list<std::pair<T, Y>>& items)
 	{
-		/*
-		* Returns a list of items that can be found in the
-		* specified area of the tree. This number can be in fact quite large
-		*/
-
-		std::list<std::pair<T, Y>> items;
+		//Place for some safety
 
 		//This can go deep into the recursion
-		recursive_search(area, items);
-
-		return items;
-
+		recursive_dfs(area, items);
 	}
 
 
-	//Using the dfs algorithm to search for the given area
-	template<typename T, typename Y, size_t MaxDepth>
-	std::list<std::pair<T, Y>> Octree<T, Y, MaxDepth>::dfs(Collisions::AABB& area)
+	//Searches for a given area inside the tree
+	template<typename T, typename Y>
+	void Octree<T, Y>::bfs(Collisions::AABB& area, std::list<std::pair<T, Y>>& items)
 	{
+		//Lamda for asigning the children to the queue
+		auto asign_children = [](std::queue<std::shared_ptr<Octree<T, Y>>>& temp_queue, std::array<std::shared_ptr<Octree<T, Y>>, 8>& temp) {
+			//Pushing the octants to a temporary container
+			for (int j = 0; j < NUMBER_OF_OCTANTS; j++)
+			{
+				if (temp[j])
+				{
+					//If the pointer isn't null, I am placing it on to the queue
+					temp_queue.push(temp[j]);
+				}
+				else
+				{
+					//Else I tell the function, that We propably reached the leaf node
+					return false;
+				}
 
-		//TODO: Think about the dfs algorithm overall and implement it here
+			}
 
+			//Comes down here when every octant has been found and pushed to the queue
+			return true;
+		};
+
+		//Contains the main working queue
+		std::queue<std::shared_ptr<Octree<T, Y>>> octants;
+
+		//Checking if the root contains the item
+		if (m_ContainsItem)
+		{
+			//Searching for the right sized octree and adding its content
+			if (area.contains(m_Position))
+			{
+				//If found
+				items.push_back(m_Item);
+
+				//If the given area contains the whole octree, then something isn't right
+
+				//TODO: write a function, that pushes whole octree to the list
+
+				return;
+			}
+		}
+
+		//Placing the root octants to the queue
+		for (int i = 0; i < NUMBER_OF_OCTANTS; i++)
+		{
+			if (m_Octants[i])
+				octants.push(m_Octants[i]);
+		}
+
+		//Iterative breadth first search implementation for an octree
+		size_t CurrentDepth = m_Depth;
+		
+		while (CurrentDepth < m_MaxDepth)
+		{
+			//Setting current depth
+			CurrentDepth = octants.front()->depth();
+
+			//For building the next octants queue
+			std::queue<std::shared_ptr<Octree<T, Y>>> lower_octants;
+
+			//Using a Lambda, that enables returning only from the 2 nested loops
+			[&] {
+				//Checking the queue
+				for (int i = 0; !octants.empty(); i++)
+				{
+					//Take the AABB of the octant
+					Collisions::AABB comparing = octants.front()->aabb();
+
+					std::array<glm::vec3, 2> test = comparing.bounding_region();
+
+					//Compare with the given area
+					if (comparing.intersect2(area)) {
+						//If found
+						if (area.contains(comparing))
+						{
+							//Pushing to the given list
+							items.push_back(octants.front()->access_element());
+
+							//If it is a leaf, then end the runtime
+							if (CurrentDepth == m_MaxDepth) return;
+						}
+					}
+					if (!asign_children(lower_octants, octants.front()->access_octants()))
+					{
+						return;
+					}
+					
+					//Popping the used octant
+					octants.pop();
+				}
+			}();
+
+			//Swaping the queues
+			std::swap(octants, lower_octants);
+		}
 	}
 
 
 	//Checks whether the tree contains a certain area
-	template<typename T, typename Y, size_t MaxDepth>
-	bool Octree<T, Y, MaxDepth>::contains(Collisions::AABB& area)
+	template<typename T, typename Y>
+	bool Octree<T, Y>::contains(Collisions::AABB& area)
 	{
 		return m_Position.contains(area);
 	}
 
+
+	template<typename T, typename Y>
+	std::pair<T, Y> Octree<T, Y>::access_element()
+	{
+		return m_Item;
+	}
+
+	template<typename T, typename Y>
+	std::array<std::shared_ptr<Octree<T, Y>>, 8>& Octree<T, Y>::access_octants()
+	{
+		return m_Octants;
+	}
 
 
 	/*////////////////////
@@ -346,11 +460,9 @@ namespace Octree {
 
 
 
-	template<typename T, typename Y, size_t MaxDepth>
-	void Octree<T, Y, MaxDepth>::insert(std::pair<T, Y> object, Collisions::AABB area)
+	template<typename T, typename Y>
+	void Octree<T, Y>::insert(std::pair<T, Y> object, Collisions::AABB area)
 	{
-		//Place to do the safety checks
-
 		//Checking whether anything can be inserted
 		if (!m_NodeReady)
 		{
@@ -363,15 +475,15 @@ namespace Octree {
 	}
 
 
-	template<typename T, typename Y, size_t MaxDepth>
-	void Octree<T, Y, MaxDepth>::insert_to_level(T object, Collisions::AABB area, size_t level)
+	template<typename T, typename Y>
+	void Octree<T, Y>::insert_to_level(T object, Collisions::AABB area, size_t level)
 	{
 
 	}
 
 
-	template<typename T, typename Y, size_t MaxDepth>
-	void Octree<T, Y, MaxDepth>::clear()
+	template<typename T, typename Y>
+	void Octree<T, Y>::clear()
 	{
 		//Enabling the user to write a top-down new tree, by removing the locking flags
 		m_ContainsItem = false;
@@ -396,8 +508,8 @@ namespace Octree {
 
 
 
-	template<typename T, typename Y, size_t MaxDepth>
-	void Octree<T, Y, MaxDepth>::move(Direction dir, size_t distance)
+	template<typename T, typename Y>
+	void Octree<T, Y>::move(Direction dir, size_t distance)
 	{
 
 		//TODO: enable the shift function to move the tree in space - shift it's position front, back, right, left
@@ -414,8 +526,8 @@ namespace Octree {
 
 
 
-	template<typename T, typename Y, size_t MaxDepth>
-	void Octree<T, Y, MaxDepth>::calculate_bounding_box(Collisions::AABB& BoundingBox, Octants Octant)
+	template<typename T, typename Y>
+	void Octree<T, Y>::calculate_bounding_box(Collisions::AABB& BoundingBox, Octants Octant)
 	{
 		// Here is the center of the parent node Octree
 		glm::vec3 center = m_Position.center();
@@ -535,15 +647,15 @@ namespace Octree {
 	}
 
 
-	template<typename T, typename Y, size_t MaxDepth>
-	bool Octree<T, Y, MaxDepth>::is_leaf_node(void)
+	template<typename T, typename Y>
+	bool Octree<T, Y>::is_leaf_node(void)
 	{
 		return m_IsLeaf;
 	}
 
 
-	template<typename T, typename Y, size_t MaxDepth>
-	void Octree<T, Y, MaxDepth>::recursive_subdivide(void)
+	template<typename T, typename Y>
+	void Octree<T, Y>::recursive_subdivide(void)
 	{
 		/*
 		* Checking exit conditions
@@ -589,13 +701,13 @@ namespace Octree {
 
 		for (int i = 0; i < NUMBER_OF_OCTANTS; i++)
 		{
-			m_Octants[i] = std::make_shared<Octree<T, Y, MaxDepth>>(m_OctantsBounds[i], m_Depth + 1);
+			m_Octants[i] = std::make_shared<Octree<T, Y>>(m_OctantsBounds[i], m_MaxDepth, m_Depth + 1);
 		}
 	}
 
 
-	template<typename T, typename Y, size_t MaxDepth>
-	void Octree<T, Y, MaxDepth>::recursive_search(Collisions::AABB& area, std::list<std::pair<T, Y>>& items)
+	template<typename T, typename Y>
+	void Octree<T, Y>::recursive_dfs(Collisions::AABB& area, std::list<std::pair<T, Y>>& items)
 	{
 		//TODO: Nie do koñca rozumiem ten moment. 
 
@@ -618,14 +730,14 @@ namespace Octree {
 				//Checking for overlapping
 				if (m_OctantsBounds[i].intersect2(area))
 				{
-					m_Octants[i]->recursive_search(area, items);
+					m_Octants[i]->recursive_dfs(area, items);
 				}
 			}
 		}
 	}
 
-	template<typename T, typename Y, size_t MaxDepth>
-	void Octree<T, Y, MaxDepth>::recursive_insert(std::pair<T, Y> object, Collisions::AABB area)
+	template<typename T, typename Y>
+	void Octree<T, Y>::recursive_insert(std::pair<T, Y> object, Collisions::AABB area)
 	{
 		// Checking whether the children can contain the item
 		for (int i = 0; i < NUMBER_OF_OCTANTS; i++)
@@ -640,7 +752,7 @@ namespace Octree {
 					if (!m_Octants[i])
 					{
 						//If no, create that child
-						m_Octants[i] = std::make_shared<Octree<T, Y, MaxDepth>>(m_OctantsBounds[i], m_Depth + 1);
+						m_Octants[i] = std::make_shared<Octree<T, Y>>(m_OctantsBounds[i], m_Depth + 1);
 					}
 					//If yes, proceed to the insertion
 					m_Octants[i]->insert(object, area);
@@ -662,8 +774,8 @@ namespace Octree {
 	}
 
 
-	template<typename T, typename Y, size_t MaxDepth>
-	void Octree<T, Y, MaxDepth>::recursive_resize(glm::vec3 minimum, glm::vec3 maximum)
+	template<typename T, typename Y>
+	void Octree<T, Y>::recursive_resize(glm::vec3 minimum, glm::vec3 maximum)
 	{
 		m_Position.update_position(minimum, maximum);
 		m_ContainsItem = false;
@@ -677,12 +789,9 @@ namespace Octree {
 		for (int i = 0; i < NUMBER_OF_OCTANTS; i++)
 		{
 			//Updating the octants with the bb data pulled from pre-calculated octantbounds
-			if(m_Octants[i])
+			if (m_Octants[i])
 				m_Octants[i]->recursive_resize(m_OctantsBounds[i].bounding_region()[0], m_OctantsBounds[i].bounding_region()[1]);
 		}
-
-		
 	}
-
 
 }

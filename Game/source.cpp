@@ -58,7 +58,7 @@ int main(void)
     */
 
     Collisions::AABB chunk_position(glm::vec3(0.0f), glm::vec3(16.0f, 16.0f, -16.0f));
-    Octree::Octree<int, nullptr_t, 5> chunk(chunk_position);
+    Octree::Octree<int, nullptr_t> chunk(chunk_position, 5);
 
     glm::vec3 minimum, maximum;
     minimum = glm::vec3(0.0f);
@@ -73,7 +73,7 @@ int main(void)
         for (int j = 0; j < 16; j++)
             for (int k = 0; k < 16; k++)
             {
-                block.update_position(glm::vec3((minimum.x + k), (minimum.y+i), (minimum.z-j)), glm::vec3((maximum.x + k), (maximum.y+i), (maximum.z-j)));
+                block.update_position(glm::vec3((minimum.x + k), (minimum.y + i), (minimum.z - j)), glm::vec3((maximum.x + k), (maximum.y + i), (maximum.z - j)));
                 std::pair<int, nullptr_t> temp;
                 temp = { rand(), nullptr };
                 chunk.insert(temp, block);
@@ -82,13 +82,13 @@ int main(void)
 
     std::list<std::pair<int, nullptr_t>> items;
     Collisions::AABB area(glm::vec3(1.0f, 1.0f, -1.0f), glm::vec3(2.0f, 2.0f, -2.0f));
-    items = chunk.search(area);
+    chunk.dfs(area, items);
     std::list<std::pair<int, nullptr_t>>::iterator it;
 
     if (items.empty()) std::cout << "nie\n";
     else { std::cout << "cos jest.\n"; };
 
-    for (it = items.begin(); it!=items.end(); ++it)
+    for (it = items.begin(); it != items.end(); ++it)
     {
         std::cout << "\nWartosc 1: " << it->first << "\n";
     }
@@ -110,7 +110,7 @@ int main(void)
         << dimensions[1][0] << ", " << dimensions[1][1] << ", " << dimensions[1][2] << "\n";
 
     minimum = dimensions[0];
-    maximum = glm::vec3(dimensions[0].x+1.0f, dimensions[0].y+1.0f, dimensions[0].z-1.0f);
+    maximum = glm::vec3(dimensions[0].x + 1.0f, dimensions[0].y + 1.0f, dimensions[0].z - 1.0f);
 
     for (int i = 0; i < 16; i++)
         for (int j = 0; j < 16; j++)
@@ -128,7 +128,8 @@ int main(void)
     std::cout << "\nTyle weszlo w size: " << chunk.size() << "\n";
 
     Collisions::AABB area1(glm::vec3(17.0f, 1.0f, -17.0f), glm::vec3(18.0f, 2.0f, -18.0f));
-    items = chunk.search(area1);
+    items.clear();
+    chunk.bfs(area1, items);
 
     if (items.empty()) std::cout << "nie\n";
     else { std::cout << "cos jest.\n"; };
@@ -137,6 +138,19 @@ int main(void)
     {
         std::cout << "\nWartosc 1: " << it->first << "\n";
     }
+
+    items.clear();
+    chunk.dfs(area1, items);
+
+    if (items.empty()) std::cout << "nie\n";
+    else { std::cout << "cos jest.\n"; };
+
+    for (it = items.begin(); it != items.end(); ++it)
+    {
+        std::cout << "\nWartosc 1: " << it->first << "\n";
+    }
+
+    //
 
     // Game Loop itself
 
@@ -148,7 +162,7 @@ int main(void)
         // Render
 
 
-   
+
         // Clear the colorbuffer
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
