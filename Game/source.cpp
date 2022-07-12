@@ -97,14 +97,18 @@ int main(void)
 
     std::cout << "\nTyle weszlo w size: " << chunk.size() << "\n";
 
-    std::array<glm::vec3, 2> dimensions = chunk.position();
+    std::array<glm::vec3, 2> dimensions = chunk.aabb().bounding_region();
 
     std::cout << "Dimensions are: " << dimensions[0][0] << ", " << dimensions[0][1] << ", " << dimensions[0][2] << "\n"
         << dimensions[1][0] << ", " << dimensions[1][1] << ", " << dimensions[1][2] << "\n";
 
-    chunk.resize(glm::vec3(16.0f, 0.0f, -16.0f), glm::vec3(32.0f, 16.0f, -32.0f));
 
-    dimensions = chunk.position();
+    std::pair<std::list<std::pair<int, nullptr_t>>, bool> resize_result;
+    resize_result = chunk.resize({ glm::vec3(16.0f, 0.0f, -16.0f), glm::vec3(32.0f, 16.0f, -32.0f) });
+
+    if (!resize_result.second) std::cout << "Nothing has been spared\n";
+
+    dimensions = chunk.aabb().bounding_region();
 
     std::cout << "Dimensions are: " << dimensions[0][0] << ", " << dimensions[0][1] << ", " << dimensions[0][2] << "\n"
         << dimensions[1][0] << ", " << dimensions[1][1] << ", " << dimensions[1][2] << "\n";

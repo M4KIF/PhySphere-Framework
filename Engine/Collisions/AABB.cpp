@@ -20,10 +20,10 @@ namespace Collisions {
     }
 
 
-    AABB::AABB(AABB& Copy)
+    AABB::AABB(const AABB& Copy)
     {
         //Setting the bounding box
-        m_MinMax = Copy.bounding_region();
+        m_MinMax = Copy.m_MinMax;
 
         //Calculating the center
         center();
@@ -166,7 +166,6 @@ namespace Collisions {
     }
 
 
-    //It will be faster for sure than mine version
     bool AABB::intersect2(AABB& compared)
     {
         std::array<glm::vec3, 2> bounding_box = compared.bounding_region();
@@ -174,6 +173,17 @@ namespace Collisions {
         return (bounding_box[0].x <= m_MinMax[1].x && bounding_box[1].x >= m_MinMax[0].x) &&
             (bounding_box[0].y <= m_MinMax[1].y && bounding_box[1].y >= m_MinMax[0].y) &&
             (bounding_box[0].z >= m_MinMax[1].z && bounding_box[1].z <= m_MinMax[0].z);
+    }
+
+
+    bool AABB::strict_intersect(AABB& compared)
+    {
+
+        std::array<glm::vec3, 2> bounding_box = compared.bounding_region();
+
+        return (bounding_box[0].x < m_MinMax[1].x && bounding_box[1].x > m_MinMax[0].x) &&
+            (bounding_box[0].y < m_MinMax[1].y && bounding_box[1].y > m_MinMax[0].y) &&
+            (bounding_box[0].z > m_MinMax[1].z && bounding_box[1].z < m_MinMax[0].z);
     }
 
 
