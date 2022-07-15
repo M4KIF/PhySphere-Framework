@@ -40,6 +40,14 @@ enum class Direction :unsigned char {
 namespace Octree {
 
 	template<typename T>
+	struct ItemLocation
+	{
+		typename std::list<T>* items_container = nullptr;
+		typename std::list<T>::iterator items_iterator;
+		typename std::array<glm::vec3, 2> bounding_box;
+	};
+
+	template<typename T>
 	class Octree
 	{
 
@@ -72,12 +80,6 @@ namespace Octree {
 		//Speaks for itself
 		bool is_leaf_node(void);
 
-		//Deletes the nodes that went out of bounds
-		void delete_nodes(std::pair<std::list<T>, Direction> result, size_t starting_level);
-
-		//Moves the rest of the octants according to the direction that has been deleted.
-		void move_nodes(Collisions::AABB& area, Direction direction);
-
 		//
 		std::array<std::shared_ptr<Octree<T>>, 8>& access_octants();
 
@@ -87,7 +89,7 @@ namespace Octree {
 		//Set of minimal recursive functions that just do their tasks, without tree safety
 		void recursive_subdivide(void); //OK
 		void recursive_dfs(Collisions::AABB& area, std::list<T>& items); //OK
-		bool recursive_insert(T object, Collisions::AABB area); //OK
+		ItemLocation<T> recursive_insert(T object, Collisions::AABB area); //OK
 		void recursive_resize(Collisions::AABB& area); //OK
 
 
@@ -114,10 +116,9 @@ namespace Octree {
 		// The flag set
 		bool m_IsLeaf = false;
 		bool m_NodeReady = false;
-		bool m_ContainsItem = false;
 
 		//Item that the node is storing. Can become anything that the programmer wants it to
-		T m_Item;
+		std::list<T> m_Item;
 
 	public:
 
@@ -151,14 +152,14 @@ namespace Octree {
 		void dfs(Collisions::AABB& area, std::list<T>& items); //TODO
 		void bfs(Collisions::AABB& area, std::list<T>& items); //TODO
 		bool contains(Collisions::AABB& area); //OK
-		void erase(Collisions::AABB& area, std::list<T>& items);
-		T access_element();
+		void erase_area(Collisions::AABB& area, std::list<T>& items);
+		std::list<T> access_elements();
 
 		/*
 		* Modifiers
 		*/
 
-		bool insert(T object, Collisions::AABB area); //OK
+		ItemLocation<T> insert(T object, Collisions::AABB area); //OK
 		void clear(); //OK 
 
 		/*
@@ -198,7 +199,6 @@ namespace Octree {
 		//Every octree starts as a leaf node before any subdivisions
 		m_IsLeaf = true;
 		m_NodeReady = true;
-		m_ContainsItem = false;
 
 		//Proceeds to subdivision
 		recursive_subdivide();
@@ -213,7 +213,6 @@ namespace Octree {
 		//Every octree starts as a leaf node before any subdivisions
 		m_IsLeaf = true;
 		m_NodeReady = true;
-		m_ContainsItem = false;
 
 		//Sets the current level
 		m_Depth = Depth;
@@ -258,10 +257,10 @@ namespace Octree {
 		size_t count = 0;
 
 		//Checks if the item is allocated
-		if (m_ContainsItem)
+		if (!m_Item.empty())
 		{
 			//If yes, then adds one to count
-			count++;
+			count += m_Item.size();
 		}
 		//Iterates recursively through all of the octants
 		for (int i = 0; i < NUMBER_OF_OCTANTS; i++)
@@ -362,12 +361,15 @@ namespace Octree {
 		std::list<std::shared_ptr<Octree<T>>> octants;
 
 		//Checking if the root contains the item
-		if (m_ContainsItem)
+		if (!m_Item.empty())
 		{
 			//Adding an item if it fits the octree, or items if they cross through trees
 			if (area.contains(m_Position))
 			{
-				items.push_back(m_Item);
+				for (const auto& it : m_Item)
+				{
+					items.push_back((it));
+				}
 			}
 		}
 
@@ -405,13 +407,21 @@ namespace Octree {
 					if (comparing.intersect2(area)) {
 
 						//Adding an item if it fits the octree, or items if they cross through trees
+						std::list<T> temp = (**it).access_elements();
+
 						if (area.contains(comparing))
 						{
-							items.push_back((**it).access_element());
+							for (const auto& it : temp)
+							{
+								items.push_back((it));
+							}
 						}
 						else if (is_leaf_node() && comparing.intersect2(area))
 						{
-							items.push_back((**it).access_element());
+							for (const auto& it : temp)
+							{
+								items.push_back((it));
+							}
 						}
 
 					}
@@ -439,27 +449,31 @@ namespace Octree {
 
 
 	template<typename T>
-	void Octree<T>::erase(Collisions::AABB& area, std::list<T>& items)
+	void Octree<T>::erase_area(Collisions::AABB& area, std::list<T>& items)
 	{
 		//Checking the parent node for the items
-		if (m_ContainsItem)
+		if (!m_Item.empty())
 		{
 			//Adding an item if it fits the octree, or items if they cross through trees
 			if (area.contains(m_Position))
 			{
-				//Unchecking the flag
-				m_ContainsItem = false;
-
 				//Pushing the found item into the list
-				items.push_back(m_Item);
+				for (const auto& it : m_Item)
+				{
+					items.push_back((it));
+				}
+
+				m_Item.clear();
 			}
 			else if (is_leaf_node() && m_Position.intersect2(area))
 			{
-				//Unchecking the flag
-				m_ContainsItem = false;
-
 				//Pushing the found item into the list
-				items.push_back(m_Item);
+				for (const auto& it : m_Item)
+				{
+					items.push_back((it));
+				}
+
+				m_Item.clear();
 			}
 		}
 
@@ -471,7 +485,7 @@ namespace Octree {
 				//Checking for overlapping
 				if (m_OctantsBounds[i].intersect2(area))
 				{
-					m_Octants[i]->erase(area, items);
+					m_Octants[i]->erase_area(area, items);
 				}
 			}
 		}
@@ -480,7 +494,7 @@ namespace Octree {
 
 
 	template<typename T>
-	T Octree<T>::access_element()
+	std::list<T> Octree<T>::access_elements()
 	{
 		return m_Item;
 	}
@@ -492,12 +506,12 @@ namespace Octree {
 
 
 	template<typename T>
-	bool Octree<T>::insert(T object, Collisions::AABB area)
+	ItemLocation<T> Octree<T>::insert(T object, Collisions::AABB area)
 	{
 		//Checking whether anything can be inserted
 		if (!m_NodeReady)
 		{
-			return false;
+			return {};
 		}
 
 		//
@@ -510,7 +524,7 @@ namespace Octree {
 	void Octree<T>::clear()
 	{
 		//Enabling the user to write a top-down new tree, by removing the locking flags
-		m_ContainsItem = false;
+		m_Item.clear();
 
 		//Proceeding to the Octants
 		for (int i = 0; i < NUMBER_OF_OCTANTS; i++)
@@ -581,7 +595,7 @@ namespace Octree {
 		for (it = items.begin(); it!=items.end(); ++it)
 		{
 			//If the item cannot be inserted, it means that is has been discarded
-			if (!insert((*it).first, (*it).second))
+			if (insert((*it).first, (*it).second).items_container == nullptr)
 			{
 				discarded_items.push_back((*it).first);
 				free_nodes.push_back((*it).second);
@@ -591,7 +605,6 @@ namespace Octree {
 
 		//Clearing the temporary items list
 		items.clear();
-
 
 		////Here are the resulting lists
 		//std::list<T> deleted_items;
@@ -775,9 +788,12 @@ namespace Octree {
 	template<typename T>
 	void Octree<T>::collect_items(std::list<std::pair<T, Collisions::AABB>>& items)
 	{
-		if (m_ContainsItem)
+		if (!m_Item.empty())
 		{
-			items.push_back({ m_Item, m_Position });
+			for (const auto& it : m_Item)
+			{
+				items.push_back({ (it), m_Position });
+			}
 		}
 		for (uint8_t i = 0; i < NUMBER_OF_OCTANTS; ++i)
 		{
@@ -837,16 +853,22 @@ namespace Octree {
 	void Octree<T>::recursive_dfs(Collisions::AABB& area, std::list<T>& items)
 	{
 		//Checking the parent node for the items
-		if (m_ContainsItem)
+		if (!m_Item.empty())
 		{
 			//Adding an item if it fits the octree, or items if they cross through trees
 			if (m_Position.contains(area))
 			{
-				items.push_back(m_Item);
+				for (const auto& it : m_Item)
+				{
+					items.push_back((it));
+				}
 			}
 			else if (is_leaf_node() && m_Position.intersect2(area))
 			{
-				items.push_back(m_Item);
+				for (const auto& it : m_Item)
+				{
+					items.push_back((it));
+				}
 			}
 		}
 
@@ -866,7 +888,7 @@ namespace Octree {
 	}
 
 	template<typename T>
-	bool Octree<T>::recursive_insert(T object, Collisions::AABB area)
+	ItemLocation<T> Octree<T>::recursive_insert(T object, Collisions::AABB area)
 	{
 		//Checking whether the children can contain the item
 		for (int i = 0; i < NUMBER_OF_OCTANTS; i++)
@@ -892,24 +914,23 @@ namespace Octree {
 		}
 
 		//Inserting an item
-		if (!m_ContainsItem)
+		if (m_Item.empty())
 		{
 			if (m_Position.contains(area))
 			{
-				m_Item = object;
-				m_ContainsItem = true;
+				m_Item.push_back(object);
 
 				//returning
-				return true;
+				return { &m_Item, std::prev(m_Item.end()), area.bounding_region() };
 			}
 			else
 			{
-				return false;
+				return {};
 			}
 		}
 		else
 		{
-			return false;
+			return {};
 		}
 
 	}
@@ -921,13 +942,12 @@ namespace Octree {
 		//Taking the bounds from the aabb
 		std::array<glm::vec3, 2> bounds = area.bounding_region();
 		m_Position.update_position(bounds[0], bounds[1]);
-		m_ContainsItem = false;
+		m_Item.clear();
 
 		// Calcaulating the potential children coordinates
 		for (uint8_t i = 0; i < NUMBER_OF_OCTANTS; ++i)
 		{
 			calculate_bounding_box(m_OctantsBounds[i], (Octants)(1 << i));
-
 		}
 
 		for (uint8_t i = 0; i < NUMBER_OF_OCTANTS; ++i)

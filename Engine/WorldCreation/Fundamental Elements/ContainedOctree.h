@@ -18,13 +18,25 @@
 * /////////////////////////////////////
 */
 
+
+
 namespace Octree {
+
+	template<typename T>
+	struct OctreeItem
+	{
+		//Item itself
+		T item;
+
+		//The location to the container inside Octree that holds the iterator to this exact element above
+		ItemLocation<typename std::list<OctreeItem<T>>::iterator> item_position;
+	};
 
 	template<typename T>
 	class ContainedOctree
 	{
 
-		using OctreeContainer = std::list<T>;
+		using OctreeContainer = std::list<OctreeItem<T>>;
 
 	protected:
 
@@ -72,7 +84,8 @@ namespace Octree {
 		* Modifiers
 		*/
 
-		void insert(T object, Collisions::AABB area);
+		bool insert(T object, Collisions::AABB area);
+		bool remove(typename OctreeContainer::iterator& item);
 		void clear();
 
 		/*
@@ -227,13 +240,31 @@ namespace Octree {
 
 
 	template<typename T>
-	void ContainedOctree<T>::insert(T object, Collisions::AABB area)
+	bool ContainedOctree<T>::insert(T object, Collisions::AABB area)
 	{
-		//Here I am inserting first into the list
-		m_Items.push_back(object);
+		//Temporary storage for the itemlocation object
+		OctreeItem<T> temp;
 
-		//And then I am giving the iterator to the octree and inserting as normal
-		m_Root.insert(std::prev(m_Items.end()), area);
+		//Inserting the item to the structure
+		temp.item = object;
+
+		//Pushing the structure up the list
+		m_Items.push_back(temp);
+
+		//Filling the remaining data, that We get from the Octree insertion
+		m_Items.back().item_position = m_Root.insert(std::prev(m_Items.end()), area);
+	}
+
+
+	template<typename T>
+	bool ContainedOctree<T>::remove(typename OctreeContainer::iterator& item)
+	{
+		/*Basicly, acceses the iterator, finds the container in the accessed structure,
+		finds the iterator in the structure, and demands the container to erase the given iterator from its content*/
+		item->item_position.items_container->erase(item->item_position.items_iterator);
+
+		//Deletes the original item from the list
+		m_Items.erase(item);
 	}
 
 
@@ -244,6 +275,9 @@ namespace Octree {
 		m_Root.clear();
 
 		//Clears the list of items
+
+		//TODO: CLEAR THE NEW STRUCTS BEFORE DELETING
+
 		m_Items.clear();
 	}
 
@@ -255,58 +289,7 @@ namespace Octree {
 	template<typename T>
 	void ContainedOctree<T>::shift(size_t leaf_nodes, Direction direction, std::list<T>& discarded_items, std::list<Collisions::AABB>& free_nodes)
 	{
-		//Storing the new coordinates for the tree
-		std::array<glm::vec3, 2> bounding_box = m_Root.aabb().bounding_region();
-
-		//Temporary items list
-		std::list<std::pair<T, Collisions::AABB>> items;
-
-		//Calculating the bounding box
-		switch (direction)
-		{
-		case Direction::North:
-
-			bounding_box[0].z -= leaf_nodes * m_LeafNodeSide;
-			bounding_box[1].z -= leaf_nodes * m_LeafNodeSide;
-
-			break;
-		case Direction::South:
-
-			bounding_box[0].z += leaf_nodes * m_LeafNodeSide;
-			bounding_box[1].z += leaf_nodes * m_LeafNodeSide;
-
-			break;
-		case Direction::East:
-
-			bounding_box[0].x += leaf_nodes * m_LeafNodeSide;
-			bounding_box[1].x += leaf_nodes * m_LeafNodeSide;
-
-			break;
-		case Direction::West:
-
-			bounding_box[0].x -= leaf_nodes * m_LeafNodeSide;
-			bounding_box[1].x -= leaf_nodes * m_LeafNodeSide;
-
-			break;
-		}
-
-		//Resizing the tree
-		resize({ bounding_box[0], bounding_box[1] });
-
-		//Iterator of the items list
-		typename std::list<T>::iterator it;
-
-		//Bulk inserting the content of the tree
-		for (it = items.begin(); it != items.end(); ++it)
-		{
-			//If the item cannot be inserted, it means that is has been discarded
-			if (!insert((*it), (*it).second))
-			{
-				discarded_items.push_back((*it).first);
-				free_nodes.push_back((*it).second);
-			}
-
-		}
+		
 	}
 
 }

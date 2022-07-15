@@ -11,7 +11,7 @@
 #include<chrono>
 
 // Game Files
-#include<Engine/WorldCreation/Fundamental Elements/Octree.h>
+#include<Engine/WorldCreation/Fundamental Elements/ContainedOctree.h>
 
 
 
@@ -172,7 +172,7 @@ int main(void)
     //
 
     items.clear();
-    chunk.erase(area1, items);
+    chunk.erase_area(area1, items);
 
     for (it = items.begin(); it != items.end(); ++it)
     {
@@ -194,6 +194,8 @@ int main(void)
     typename std::list<std::pair<int, Collisions::AABB>>::iterator iter;
 
     std::cout << "\nIle p[rzetrwalo: " << shift.size() << "\n";
+
+    Octree::ContainedOctree<int> jaja;
 
 chunk.bfs(area2, items);
     
