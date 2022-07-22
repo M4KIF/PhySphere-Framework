@@ -9,7 +9,7 @@
 * targets the ease of comparing blocks by using typeid.
 */
 
-class Air : public Block {
+class Air : public World::Block {
 public:
 
 	// Constructors and a Virtual destructor
@@ -21,7 +21,7 @@ public:
 
 };
 
-class Indestructible : public Block {
+class Indestructible : public World::Block {
 public:
 
 	// Constructors and a Virtual destructor
@@ -33,7 +33,7 @@ public:
 
 };
 
-class Stone : public Block {
+class Stone : public World::Block {
 public:
 
 	// Constructors and a Virtual destructor
@@ -45,7 +45,7 @@ public:
 
 };
 
-class Grass : public Block {
+class Grass : public World::Block {
 public:
 
 	// Constructors and a Virtual destructor
@@ -57,7 +57,7 @@ public:
 
 };
 
-class Sand : public Block {
+class Sand : public World::Block {
 public:
 
 	// Constructors and a Virtual destructor
@@ -69,7 +69,7 @@ public:
 
 };
 
-class Wood : public Block {
+class Wood : public World::Block {
 public:
 
 	// Constructors and a Virtual destructor
@@ -81,7 +81,7 @@ public:
 
 };
 
-class Leaf : public Block {
+class Leaf : public World::Block {
 public:
 
 	// Constructors and a Virtual destructor

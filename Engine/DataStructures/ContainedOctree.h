@@ -5,7 +5,7 @@
 //Default Libraries
 
 //Game files
-#include<Engine/WorldCreation/Fundamental Elements/Octree.h>
+#include<Engine/DataStructures/Octree.h>
 
 
 /*
@@ -20,7 +20,7 @@
 
 
 
-namespace Octree {
+namespace DataStructures {
 
 	template<typename T>
 	struct OctreeItem
@@ -29,7 +29,7 @@ namespace Octree {
 		T item;
 
 		//The location to the container inside Octree that holds the iterator to this exact element above
-		ItemLocation<typename std::list<OctreeItem<T>>::iterator> item_position;
+		Dependencies::Tree::Location<typename std::list<OctreeItem<T>>::iterator> item_position;
 	};
 
 	template<typename T>
@@ -50,8 +50,8 @@ namespace Octree {
 		*/
 
 		ContainedOctree();
-		ContainedOctree(Collisions::AABB BoundingBox, size_t MaxDepth);
-		ContainedOctree(Collisions::AABB BoundingBox, size_t MaxDepth, std::list<T> Items);
+		ContainedOctree(Collisions::AABB BoundingBox, size_t MaxDepth, size_t MinimumDimensions);
+		ContainedOctree(Collisions::AABB BoundingBox, size_t MaxDepth, size_t MinimumDimensions, std::list<T> Items);
 		~ContainedOctree();
 
 		/*
@@ -61,6 +61,7 @@ namespace Octree {
 		Collisions::AABB& aabb();
 		size_t size();
 		size_t max_size();
+		size_t min_dimensions();
 		size_t max_depth();
 		void resize(Collisions::AABB area);
 		bool empty();
@@ -92,7 +93,7 @@ namespace Octree {
 		* Space altering
 		*/
 
-		void shift(size_t leaf_nodes, Direction direction, std::list<T>& discarded_items, std::list<Collisions::AABB>& free_nodes); //TODO
+		void shift(size_t leaf_nodes, Dependencies::Tree::MovementDirection direction, std::list<std::pair<T, Collisions::AABB>>& returned_data); //TODO
 
 	};
 
@@ -111,14 +112,14 @@ namespace Octree {
 	
 
 	template<typename T>
-	ContainedOctree<T>::ContainedOctree(Collisions::AABB BoundingBox, size_t MaxDepth) :
-		m_Root(BoundingBox, MaxDepth)
+	ContainedOctree<T>::ContainedOctree(Collisions::AABB BoundingBox, size_t MaxDepth, size_t MinimumDimensions) :
+		m_Root(BoundingBox, MaxDepth, MinimumDimensions)
 	{}
 
 
 	template<typename T>
-	ContainedOctree<T>::ContainedOctree(Collisions::AABB BoundingBox, size_t MaxDepth, std::list<T> Items) :
-		m_Root(BoundingBox, MaxDepth)
+	ContainedOctree<T>::ContainedOctree(Collisions::AABB BoundingBox, size_t MaxDepth, size_t MinimumDimensions, std::list<T> Items) :
+		m_Root(BoundingBox, MaxDepth, MinimumDimensions)
 	{
 		// TODO: make a bulk insertion algorithm
 	}
@@ -152,6 +153,13 @@ namespace Octree {
 	size_t ContainedOctree<T>::max_size()
 	{
 		return m_Root.max_size();
+	}
+
+
+	template<typename T>
+	size_t ContainedOctree<T>::min_dimensions()
+	{
+		return m_Root.min_dimensions();
 	}
 
 
@@ -242,7 +250,7 @@ namespace Octree {
 	template<typename T>
 	bool ContainedOctree<T>::insert(T object, Collisions::AABB area)
 	{
-		//Temporary storage for the itemlocation object
+		//Temporary storage for the Dependencies::Tree::Location object
 		OctreeItem<T> temp;
 
 		//Inserting the item to the structure
@@ -253,6 +261,14 @@ namespace Octree {
 
 		//Filling the remaining data, that We get from the Octree insertion
 		m_Items.back().item_position = m_Root.insert(std::prev(m_Items.end()), area);
+
+		//Depending on the outcome of the insertion gives the result
+		if (m_Items.back().item_position.items_container)
+		{
+			return true;
+		}
+		else
+			return false;
 	}
 
 
@@ -287,9 +303,72 @@ namespace Octree {
 	*/////////////////////
 
 	template<typename T>
-	void ContainedOctree<T>::shift(size_t leaf_nodes, Direction direction, std::list<T>& discarded_items, std::list<Collisions::AABB>& free_nodes)
+	void ContainedOctree<T>::shift(size_t leaf_nodes, Dependencies::Tree::MovementDirection direction, std::list<std::pair<T, Collisions::AABB>>& returned_data)
 	{
-		
+		//Storing the new coordinates for the tree
+		std::array<glm::vec3, 2> bounding_box = m_Root.aabb().bounding_region();
+
+		//Getting the side length for the calculations
+		size_t leaf_side_length = m_Root.leaf_node_side_length();
+
+		//Calculating the bounding box
+		switch (direction)
+		{
+		case Dependencies::Tree::MovementDirection::North:
+
+			bounding_box[0].z -= leaf_nodes * leaf_side_length;
+			bounding_box[1].z -= leaf_nodes * leaf_side_length;
+
+			break;
+		case Dependencies::Tree::MovementDirection::South:
+
+			bounding_box[0].z += leaf_nodes * leaf_side_length;
+			bounding_box[1].z += leaf_nodes * leaf_side_length;
+
+			break;
+		case Dependencies::Tree::MovementDirection::East:
+
+			bounding_box[0].x += leaf_nodes * leaf_side_length;
+			bounding_box[1].x += leaf_nodes * leaf_side_length;
+
+			break;
+		case Dependencies::Tree::MovementDirection::West:
+
+			bounding_box[0].x -= leaf_nodes * leaf_side_length;
+			bounding_box[1].x -= leaf_nodes * leaf_side_length;
+
+			break;
+		}
+
+		//Resizing the tree
+		m_Root.resize({ bounding_box[0], bounding_box[1] });
+
+		//Iterator of the items list
+		typename std::list<OctreeItem<T>>::iterator it = m_Items.begin();
+
+		//Bulk inserting the content of the tree
+		while (it != m_Items.end())
+		{
+
+			//If the item cannot be inserted, it means that is has been discarded
+			if (!(m_Root.insert(it, it->item_position.aabb)).items_container)
+			{
+				//Giving the info about the item that didn't fit
+				returned_data.push_back({it->item, it->item_position.aabb});
+
+				//Incrementing the iterator
+				it++;
+
+				//Deleting and proceeding further
+				m_Items.erase(std::prev(it));
+				continue;
+			}
+			
+			//Incrementing the iterator
+			++it;
+
+		}
+
 	}
 
 }

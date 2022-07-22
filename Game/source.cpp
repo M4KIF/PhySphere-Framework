@@ -11,7 +11,9 @@
 #include<chrono>
 
 // Game Files
-#include<Engine/WorldCreation/Fundamental Elements/ContainedOctree.h>
+#include<Engine/DataStructures/Octree.h>
+#include<Engine/DataStructures/ContainedOctree.h>
+#include<Engine/DataStructures/QuadTree.h>
 
 
 
@@ -64,7 +66,7 @@ int main(void)
     */
 
     Collisions::AABB chunk_position(glm::vec3(0.0f), glm::vec3(16.0f, 16.0f, -16.0f));
-    Octree::Octree<int> chunk(chunk_position, 3);
+    DataStructures::Octree<int> chunk(chunk_position, 3, 1);
 
     glm::vec3 minimum, maximum;
     minimum = glm::vec3(0.0f);
@@ -184,21 +186,46 @@ int main(void)
     std::list<int> shift;
     std::list<Collisions::AABB> free_nodes;
 
-    t1 = high_resolution_clock::now();
+    
        
-    chunk.shift(1, Direction::West, shift, free_nodes);
+    //chunk.shift(1, Direction::West, shift, free_nodes);
     
     
 
-    t2 = high_resolution_clock::now();
-    typename std::list<std::pair<int, Collisions::AABB>>::iterator iter;
+
 
     std::cout << "\nIle p[rzetrwalo: " << shift.size() << "\n";
 
-    Octree::ContainedOctree<int> jaja;
+    DataStructures::ContainedOctree<int> jaja({ glm::vec3(16.0f, 0.0f, -16.0f), glm::vec3(32.0f, 16.0f, -32.0f) }, 3, 2);
 
-chunk.bfs(area2, items);
-    
+    dimensions = jaja.aabb().bounding_region();
+
+    std::cout << "Dimensions are: " << dimensions[0][0] << ", " << dimensions[0][1] << ", " << dimensions[0][2] << "\n"
+        << dimensions[1][0] << ", " << dimensions[1][1] << ", " << dimensions[1][2] << "\n";
+
+    minimum = dimensions[0];
+    maximum = glm::vec3(dimensions[0].x + 2.0f, dimensions[0].y + 2.0f, dimensions[0].z - 2.0f);
+
+
+    for (int i = 0; i < 8; i++)
+        for (int j = 0; j < 8; j++)
+            for (int k = 0; k < 8; k++)
+            {
+                block.update_position(glm::vec3((minimum.x + 2.0 * k), (minimum.y + 2.0 * i), (minimum.z - 2.0 * j)), glm::vec3((maximum.x + 2.0 * k), (maximum.y + 2.0 * i), (maximum.z - 2.0 * j)));
+                jaja.insert(rand(), block);
+                //if (chunk_position.contains(block)) how_much_fits++;
+            }
+
+
+    std::list<std::pair<int, Collisions::AABB>> returning;
+
+    t1 = high_resolution_clock::now();
+
+    std::cout << "SIZE CONT: " << jaja.size() << "\n";
+
+    jaja.shift(3, Dependencies::Tree::MovementDirection::North, returning);
+
+    t2 = high_resolution_clock::now();
 
     /* Getting number of milliseconds as an integer. */
     ms_int = duration_cast<milliseconds>(t2 - t1);
@@ -209,12 +236,74 @@ chunk.bfs(area2, items);
     std::cout << ms_int.count() << "ms\n";
     std::cout << ms_double.count() << "ms\n";
 
+    typename std::list<std::pair<int, Collisions::AABB>>::iterator iter;
+
+    std::cout << "SIZE CONT: " << jaja.size() << "\n";
+
+    //The chunk testing now
+
+    returning.clear();
+
+
+    t1 = high_resolution_clock::now();
+
+    //std::cout << "SIZE CONT: " << chunk.size() << "\n";
+
+    chunk.shift(3, Dependencies::Tree::MovementDirection::North, returning);
+
+    t2 = high_resolution_clock::now();
+
+    /* Getting number of milliseconds as an integer. */
+    ms_int = duration_cast<milliseconds>(t2 - t1);
+
+    /* Getting number of milliseconds as a double. */
+    ms_double = t2 - t1;
+
+    std::cout << ms_int.count() << "ms\n";
+    std::cout << ms_double.count() << "ms\n";
+
+
+    //shift.clear();
+    //free_nodes.clear();
+
+    //t1 = high_resolution_clock::now();
+
+    //chunk.shift(1, Direction::North, shift, free_nodes);
+
+    //t2 = high_resolution_clock::now();
+
+    ///* Getting number of milliseconds as an integer. */
+    //ms_int = duration_cast<milliseconds>(t2 - t1);
+
+    ///* Getting number of milliseconds as a double. */
+    //ms_double = t2 - t1;
+
+    //std::cout << ms_int.count() << "ms\n";
+    //std::cout << ms_double.count() << "ms\n";
+
+//chunk.bfs(area2, items);
+//    
+//
+//    /* Getting number of milliseconds as an integer. */
+//    ms_int = duration_cast<milliseconds>(t2 - t1);
+//
+//    /* Getting number of milliseconds as a double. */
+//    ms_double = t2 - t1;
+//
+//    std::cout << ms_int.count() << "ms\n";
+//    std::cout << ms_double.count() << "ms\n";
+
     
 
     //for (iter = shift.begin(); iter != shift.end(); ++iter)
     //{
     //    std::cout << "\nWartosc 1: " << (*iter).first << "\n";
     //}
+
+
+
+    DataStructures::QuadTree<int> quad({ glm::vec3(-256.0f, 0.0f, 256.0f), glm::vec3(256.0f, 256.0f, -256.0f) }, 1, 32);
+
 
     // Game Loop itself
 
