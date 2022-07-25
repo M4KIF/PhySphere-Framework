@@ -21,7 +21,7 @@
     <ClCompile Include="Engine\Rendering\Shader.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\WorldCreation\Fundamental Elements\Chunk.cpp">
+    <ClCompile Include="Engine\VoxelWorldCreation\Fundamental Elements\Chunk.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
     <ClCompile Include="Engine\Input\MouseInput.cpp">
@@ -30,7 +30,7 @@
     <ClCompile Include="Engine\Input\KeyboardInput.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\WorldCreation\World Generator\ChunkGenerator.cpp">
+    <ClCompile Include="Engine\VoxelWorldCreation\World Generator\ChunkGenerator.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
     <ClCompile Include="Engine\Gameplay\World.cpp">
@@ -48,16 +48,16 @@
     <ClCompile Include="Engine\BackEnd\Logging.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\WorldCreation\Mesh Generator\Mesher.cpp">
+    <ClCompile Include="Engine\Mesh Generator\Mesher.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\WorldCreation\Fundamental Elements\ChunkTree.cpp">
+    <ClCompile Include="Engine\VoxelWorldCreation\Fundamental Elements\ChunkTree.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
     <ClCompile Include="Engine\Rendering\BufferManager.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\WorldCreation\Fundamental Elements\WorldMap.cpp">
+    <ClCompile Include="Engine\VoxelWorldCreation\Fundamental Elements\WorldMap.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
     <ClCompile Include="Engine\BackEnd\MemoryManager.cpp">
@@ -72,28 +72,28 @@
     <ClCompile Include="Libraries\GLAD\src\glad.c">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\WorldCreation\World Generator\LandmassDesigner.cpp">
+    <ClCompile Include="Engine\VoxelWorldCreation\World Generator\LandmassDesigner.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\WorldCreation\World Generator\BiomeDesigner.cpp">
+    <ClCompile Include="Engine\VoxelWorldCreation\World Generator\BiomeDesigner.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\WorldCreation\World Generator\PlainsGenerator.cpp">
+    <ClCompile Include="Engine\VoxelWorldCreation\World Generator\PlainsGenerator.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\WorldCreation\World Generator\ForestGenerator.cpp">
+    <ClCompile Include="Engine\VoxelWorldCreation\World Generator\ForestGenerator.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\WorldCreation\World Generator\DesertGenerator.cpp">
+    <ClCompile Include="Engine\VoxelWorldCreation\World Generator\DesertGenerator.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\WorldCreation\World Generator\TerrainGenerator.cpp">
+    <ClCompile Include="Engine\VoxelWorldCreation\World Generator\TerrainGenerator.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\WorldCreation\World Generator\RiverGenerator.cpp">
+    <ClCompile Include="Engine\VoxelWorldCreation\World Generator\RiverGenerator.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\WorldCreation\World Generator\FloralGenerator.cpp">
+    <ClCompile Include="Engine\VoxelWorldCreation\World Generator\FloralGenerator.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
     <ClCompile Include="Engine\Movement\Camera\FirstPerson.cpp">
@@ -107,7 +107,7 @@
     <ClInclude Include="Engine\Rendering\Shader.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\WorldCreation\Fundamental Elements\Chunk.h">
+    <ClInclude Include="Engine\VoxelWorldCreation\Fundamental Elements\Chunk.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Input\MouseInput.h">
@@ -116,10 +116,10 @@
     <ClInclude Include="Engine\Input\KeyboardInput.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\WorldCreation\Fundamental Elements\Block.h">
+    <ClInclude Include="Engine\VoxelWorldCreation\Fundamental Elements\Block.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\WorldCreation\World Generator\ChunkGenerator.h">
+    <ClInclude Include="Engine\VoxelWorldCreation\World Generator\ChunkGenerator.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Gameplay\World.h">
@@ -140,19 +140,19 @@
     <ClInclude Include="Engine\BackEnd\Logging.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\WorldCreation\Fundamental Elements\Blocks.h">
+    <ClInclude Include="Engine\VoxelWorldCreation\Fundamental Elements\Blocks.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\WorldCreation\Mesh Generator\Mesher.h">
+    <ClInclude Include="Engine\Mesh Generator\Mesher.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\WorldCreation\Fundamental Elements\ChunkTree.h">
+    <ClInclude Include="Engine\VoxelWorldCreation\Fundamental Elements\ChunkTree.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Rendering\BufferManager.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\WorldCreation\Fundamental Elements\WorldMap.h">
+    <ClInclude Include="Engine\VoxelWorldCreation\Fundamental Elements\WorldMap.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
     <ClInclude Include="Engine\BackEnd\MemoryManager.h">
@@ -164,40 +164,49 @@
     <ClInclude Include="Engine\BackEnd\ExceptionHandler.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\WorldCreation\World Generator\LandmassDesigner.h">
+    <ClInclude Include="Engine\VoxelWorldCreation\World Generator\LandmassDesigner.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\WorldCreation\World Generator\BiomeDesigner.h">
+    <ClInclude Include="Engine\VoxelWorldCreation\World Generator\BiomeDesigner.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\WorldCreation\World Generator\PlainsGenerator.h">
+    <ClInclude Include="Engine\VoxelWorldCreation\World Generator\PlainsGenerator.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\WorldCreation\World Generator\ForestGenerator.h">
+    <ClInclude Include="Engine\VoxelWorldCreation\World Generator\ForestGenerator.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\WorldCreation\World Generator\DesertGenerator.h">
+    <ClInclude Include="Engine\VoxelWorldCreation\World Generator\DesertGenerator.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\WorldCreation\World Generator\TerrainGenerator.h">
+    <ClInclude Include="Engine\VoxelWorldCreation\World Generator\TerrainGenerator.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\WorldCreation\World Generator\RiverGenerator.h">
+    <ClInclude Include="Engine\VoxelWorldCreation\World Generator\RiverGenerator.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\WorldCreation\World Generator\FloralGenerator.h">
+    <ClInclude Include="Engine\VoxelWorldCreation\World Generator\FloralGenerator.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Movement\Camera\FirstPerson.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\WorldCreation\Fundamental Elements\Octree.h">
+    <ClInclude Include="Engine\DataStructures\Octree.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\WorldCreation\Fundamental Elements\ContainedOctree.h">
+    <ClInclude Include="Engine\DataStructures\ContainedOctree.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Collisions\AABB.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\DataStructures\QuadTree.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\DataStructures\ContainedQuadTree.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\DataStructures\Dependencies\Dependencies.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
   </ItemGroup>
