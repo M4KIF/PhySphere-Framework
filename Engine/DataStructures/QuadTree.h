@@ -62,8 +62,6 @@ namespace DataStructures {
 
 	protected:
 
-		//TO ADD SIDE OF THE WORLD RECOGNISION
-
 		//The dimensions of the tree
 		Collisions::AABB m_Position;
 		size_t m_LeafNodeSide;
@@ -92,19 +90,18 @@ namespace DataStructures {
 
 	public:
 
-		/*
+		/*//////////////
 		* Initialisation
-		*/
+		*///////////////
 
 		QuadTree();
 		QuadTree(Collisions::AABB BoundingBox, size_t MaxDepth, size_t MinimumDimensions);
 		QuadTree(Collisions::AABB BoundingBox, size_t MaxDepth, size_t MinimumDimensions, size_t Depth);
-		QuadTree(Collisions::AABB BoundingBox, size_t MaxDepth, size_t MinimumDimensions, std::list<std::shared_ptr<T>> Items);
 		~QuadTree();
 
-		/*
+		/*////////
 		* Capacity
-		*/
+		*/////////
 
 		size_t leaf_node_side_length();
 		Collisions::AABB& aabb();
@@ -117,9 +114,9 @@ namespace DataStructures {
 		void resize(Collisions::AABB area);
 		bool empty();
 
-		/*
+		/*//////////////
 		* Element access
-		*/
+		*///////////////
 
 		void dfs(Collisions::AABB& area, std::list<T>& items); //TODO
 		void bfs(Collisions::AABB& area, std::list<T>& items); //TODO
@@ -127,16 +124,16 @@ namespace DataStructures {
 		void erase_area(Collisions::AABB& area, std::list<T>& items);
 		std::list<T> access_elements();
 
-		/*
+		/*/////////
 		* Modifiers
-		*/
+		*//////////
 
 		Dependencies::Tree::Location<T> insert(T object, Collisions::AABB area); //OK
 		void clear(); //OK 
 
-		/*
+		/*//////////////
 		* Space altering
-		*/
+		*///////////////
 
 		//TODO: To redesign this function for it to suit the chunking system better. To specify the template for the chunks
 		void shift(size_t leaf_nodes, Dependencies::Tree::MovementDirection direction, std::list<std::pair<T, Collisions::AABB>>& returned_data);
