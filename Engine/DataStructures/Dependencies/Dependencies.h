@@ -3,7 +3,7 @@
 
 /*
 * Here are the declaration of all of the needed structs
-* for the Trees to work
+* for the Trees to work.
 */
 
 namespace Dependencies {
