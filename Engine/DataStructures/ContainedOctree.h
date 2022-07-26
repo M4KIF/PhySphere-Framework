@@ -9,13 +9,11 @@
 
 
 /*
-* ////////////////////////////////////
 * This container is meant to implement
 * the Octree in conjunction with a list
 * This way way, the
 * Octree will not own any item, but only
 * iterators to the items, It's cheaper* 
-* /////////////////////////////////////
 */
 
 
@@ -93,7 +91,7 @@ namespace DataStructures {
 		* Space altering
 		*/
 
-		void shift(size_t leaf_nodes, Dependencies::Tree::MovementDirection direction, std::list<std::pair<T, Collisions::AABB>>& returned_data); //TODO
+		void shift(size_t leaf_nodes, Dependencies::Coordinates::Directions direction, std::list<std::pair<T, Collisions::AABB>>& returned_data); //TODO
 
 	};
 
@@ -303,7 +301,7 @@ namespace DataStructures {
 	*/////////////////////
 
 	template<typename T>
-	void ContainedOctree<T>::shift(size_t leaf_nodes, Dependencies::Tree::MovementDirection direction, std::list<std::pair<T, Collisions::AABB>>& returned_data)
+	void ContainedOctree<T>::shift(size_t leaf_nodes, Dependencies::Coordinates::Directions direction, std::list<std::pair<T, Collisions::AABB>>& returned_data)
 	{
 		//Storing the new coordinates for the tree
 		std::array<glm::vec3, 2> bounding_box = m_Root.aabb().bounding_region();
@@ -314,25 +312,25 @@ namespace DataStructures {
 		//Calculating the bounding box
 		switch (direction)
 		{
-		case Dependencies::Tree::MovementDirection::North:
+		case Dependencies::Coordinates::Directions::North:
 
 			bounding_box[0].z -= leaf_nodes * leaf_side_length;
 			bounding_box[1].z -= leaf_nodes * leaf_side_length;
 
 			break;
-		case Dependencies::Tree::MovementDirection::South:
+		case Dependencies::Coordinates::Directions::South:
 
 			bounding_box[0].z += leaf_nodes * leaf_side_length;
 			bounding_box[1].z += leaf_nodes * leaf_side_length;
 
 			break;
-		case Dependencies::Tree::MovementDirection::East:
+		case Dependencies::Coordinates::Directions::East:
 
 			bounding_box[0].x += leaf_nodes * leaf_side_length;
 			bounding_box[1].x += leaf_nodes * leaf_side_length;
 
 			break;
-		case Dependencies::Tree::MovementDirection::West:
+		case Dependencies::Coordinates::Directions::West:
 
 			bounding_box[0].x -= leaf_nodes * leaf_side_length;
 			bounding_box[1].x -= leaf_nodes * leaf_side_length;

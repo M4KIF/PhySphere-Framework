@@ -9,6 +9,7 @@
 #include<typeinfo>
 #include<iterator>
 #include<chrono>
+#include<thread>
 
 // Game Files
 #include<Engine/DataStructures/Octree.h>
@@ -223,7 +224,7 @@ int main(void)
 
     std::cout << "SIZE CONT: " << jaja.size() << "\n";
 
-    jaja.shift(3, Dependencies::Tree::MovementDirection::North, returning);
+    jaja.shift(3, Dependencies::Coordinates::Directions::North, returning);
 
     t2 = high_resolution_clock::now();
 
@@ -249,7 +250,7 @@ int main(void)
 
     //std::cout << "SIZE CONT: " << chunk.size() << "\n";
 
-    chunk.shift(3, Dependencies::Tree::MovementDirection::North, returning);
+    chunk.shift(3, Dependencies::Coordinates::Directions::North, returning);
 
     t2 = high_resolution_clock::now();
 

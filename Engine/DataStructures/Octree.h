@@ -158,7 +158,7 @@ namespace DataStructures {
 		* Space altering
 		*/
 
-		void shift(size_t leaf_nodes, Dependencies::Tree::MovementDirection direction, std::list<std::pair<T, Collisions::AABB>>& returned_data); //TODO
+		void shift(size_t leaf_nodes, Dependencies::Coordinates::Directions direction, std::list<std::pair<T, Collisions::AABB>>& returned_data); //TODO
 	};
 
 
@@ -549,7 +549,7 @@ namespace DataStructures {
 
 
 	template<typename T>
-	void Octree<T>::shift(size_t leaf_nodes, Dependencies::Tree::MovementDirection direction, std::list<std::pair<T, Collisions::AABB>>& returned_data)
+	void Octree<T>::shift(size_t leaf_nodes, Dependencies::Coordinates::Directions direction, std::list<std::pair<T, Collisions::AABB>>& returned_data)
 	{
 		//Storing the new coordinates for the tree
 		std::array<glm::vec3, 2> bounding_box = m_Position.bounding_region();
@@ -560,25 +560,25 @@ namespace DataStructures {
 		//Calculating the bounding box
 		switch (direction)
 		{
-		case Dependencies::Tree::MovementDirection::North:
+		case Dependencies::Coordinates::Directions::North:
 
 			bounding_box[0].z -= leaf_nodes * m_LeafNodeSide;
 			bounding_box[1].z -= leaf_nodes * m_LeafNodeSide;
 
 			break;
-		case Dependencies::Tree::MovementDirection::South:
+		case Dependencies::Coordinates::Directions::South:
 			
 			bounding_box[0].z += leaf_nodes * m_LeafNodeSide;
 			bounding_box[1].z += leaf_nodes * m_LeafNodeSide;
 
 			break;
-		case Dependencies::Tree::MovementDirection::East:
+		case Dependencies::Coordinates::Directions::East:
 
 			bounding_box[0].x += leaf_nodes * m_LeafNodeSide;
 			bounding_box[1].x += leaf_nodes * m_LeafNodeSide;
 
 			break;
-		case Dependencies::Tree::MovementDirection::West:
+		case Dependencies::Coordinates::Directions::West:
 			
 			bounding_box[0].x -= leaf_nodes * m_LeafNodeSide;
 			bounding_box[1].x -= leaf_nodes * m_LeafNodeSide;

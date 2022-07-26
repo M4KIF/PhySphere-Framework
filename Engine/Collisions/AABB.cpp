@@ -89,6 +89,7 @@ namespace Collisions {
 
 
     //All of the points have to be inside the parent bb to return true
+    //TODO: optimise this code.
     bool AABB::contains(AABB& compared)
     {
         //Checking if the the other aabb can be possibly contained 

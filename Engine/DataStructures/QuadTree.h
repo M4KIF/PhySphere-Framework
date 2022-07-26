@@ -136,7 +136,7 @@ namespace DataStructures {
 		*///////////////
 
 		//TODO: To redesign this function for it to suit the chunking system better. To specify the template for the chunks
-		void shift(size_t leaf_nodes, Dependencies::Tree::MovementDirection direction, std::list<std::pair<T, Collisions::AABB>>& returned_data);
+		void shift(size_t leaf_nodes, Dependencies::Coordinates::Directions direction, std::list<std::pair<T, Collisions::AABB>>& returned_data);
 	};
 
 
@@ -528,7 +528,7 @@ namespace DataStructures {
 
 
 	template<typename T>
-	void QuadTree<T>::shift(size_t leaf_nodes, Dependencies::Tree::MovementDirection direction, std::list<std::pair<T, Collisions::AABB>>& returned_data)
+	void QuadTree<T>::shift(size_t leaf_nodes, Dependencies::Coordinates::Directions direction, std::list<std::pair<T, Collisions::AABB>>& returned_data)
 	{
 		//TODO: To redesign this function for it to suit the chunking system better. To specify the template for the chunks
 
@@ -541,25 +541,25 @@ namespace DataStructures {
 		//Calculating the bounding box
 		switch (direction)
 		{
-		case Dependencies::Tree::MovementDirection::North:
+		case Dependencies::Coordinates::Directions::North:
 
 			bounding_box[0].z -= leaf_nodes * m_LeafNodeSide;
 			bounding_box[1].z -= leaf_nodes * m_LeafNodeSide;
 
 			break;
-		case Dependencies::Tree::MovementDirection::South:
+		case Dependencies::Coordinates::Directions::South:
 
 			bounding_box[0].z += leaf_nodes * m_LeafNodeSide;
 			bounding_box[1].z += leaf_nodes * m_LeafNodeSide;
 
 			break;
-		case Dependencies::Tree::MovementDirection::East:
+		case Dependencies::Coordinates::Directions::East:
 
 			bounding_box[0].x += leaf_nodes * m_LeafNodeSide;
 			bounding_box[1].x += leaf_nodes * m_LeafNodeSide;
 
 			break;
-		case Dependencies::Tree::MovementDirection::West:
+		case Dependencies::Coordinates::Directions::West:
 
 			bounding_box[0].x -= leaf_nodes * m_LeafNodeSide;
 			bounding_box[1].x -= leaf_nodes * m_LeafNodeSide;
