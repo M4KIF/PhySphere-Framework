@@ -13,7 +13,7 @@
 
 
 
-class ThreadManager
+class ThreadPool
 {
 
 
