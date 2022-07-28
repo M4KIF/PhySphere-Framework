@@ -11,7 +11,7 @@
 
 //Game files
 #include<Engine/Collisions/AABB.h>
-#include<Engine/DataStructures/Dependencies/Dependencies.h>
+#include<Engine/Dependencies/Dependencies.h>
 
 //Macros
 #define NUMBER_OF_CHILDREN 4
@@ -57,7 +57,7 @@ namespace DataStructures {
 		//Set of minimal recursive functions that just do their tasks, without tree safety
 		void recursive_subdivide(void); //OK
 		void recursive_dfs(Collisions::AABB& area, std::list<T>& items); //OK
-		Dependencies::Tree::Location<T> recursive_insert(T object, Collisions::AABB area); //OK
+		Trees::Location<T> recursive_insert(T object, Collisions::AABB area); //OK
 		void recursive_resize(Collisions::AABB& area); //OK
 
 	protected:
@@ -128,7 +128,7 @@ namespace DataStructures {
 		* Modifiers
 		*//////////
 
-		Dependencies::Tree::Location<T> insert(T object, Collisions::AABB area); //OK
+		Trees::Location<T> insert(T object, Collisions::AABB area); //OK
 		void clear(); //OK 
 
 		/*//////////////
@@ -136,7 +136,7 @@ namespace DataStructures {
 		*///////////////
 
 		//TODO: To redesign this function for it to suit the chunking system better. To specify the template for the chunks
-		void shift(size_t leaf_nodes, Dependencies::Coordinates::Directions direction, std::list<std::pair<T, Collisions::AABB>>& returned_data);
+		void shift(size_t leaf_nodes, Coordinates::Directions direction, std::list<std::pair<T, Collisions::AABB>>& returned_data);
 	};
 
 
@@ -387,7 +387,7 @@ namespace DataStructures {
 					std::array<glm::vec3, 2> test = comparing.bounding_region();
 
 					//Compare with the given area
-					if (comparing.intersect2(area)) {
+					if (comparing.intersects2 (area)) {
 
 						//Adding an item if it fits the QuadTree, or items if they cross through trees
 						std::list<T> temp = (**it).access_elements();
@@ -399,7 +399,7 @@ namespace DataStructures {
 								items.push_back((it));
 							}
 						}
-						else if (is_leaf_node() && comparing.intersect2(area))
+						else if (is_leaf_node() && comparing.intersects2(area))
 						{
 							for (const auto& it : temp)
 							{
@@ -448,7 +448,7 @@ namespace DataStructures {
 
 				m_Item.clear();
 			}
-			else if (is_leaf_node() && m_Position.intersect2(area))
+			else if (is_leaf_node() && m_Position.intersects2(area))
 			{
 				//Pushing the found item into the list
 				for (const auto& it : m_Item)
@@ -466,7 +466,7 @@ namespace DataStructures {
 			if (m_Children[i])
 			{
 				//Checking for overlapping
-				if (m_ChildrenBounds[i].intersect2(area))
+				if (m_ChildrenBounds[i].intersects2(area))
 				{
 					m_Children[i]->erase_area(area, items);
 				}
@@ -489,7 +489,7 @@ namespace DataStructures {
 
 
 	template<typename T>
-	Dependencies::Tree::Location<T> QuadTree<T>::insert(T object, Collisions::AABB area)
+	Trees::Location<T> QuadTree<T>::insert(T object, Collisions::AABB area)
 	{
 		//Checking whether anything can be inserted
 		if (!m_NodeReady)
@@ -528,7 +528,7 @@ namespace DataStructures {
 
 
 	template<typename T>
-	void QuadTree<T>::shift(size_t leaf_nodes, Dependencies::Coordinates::Directions direction, std::list<std::pair<T, Collisions::AABB>>& returned_data)
+	void QuadTree<T>::shift(size_t leaf_nodes, Coordinates::Directions direction, std::list<std::pair<T, Collisions::AABB>>& returned_data)
 	{
 		//TODO: To redesign this function for it to suit the chunking system better. To specify the template for the chunks
 
@@ -541,25 +541,25 @@ namespace DataStructures {
 		//Calculating the bounding box
 		switch (direction)
 		{
-		case Dependencies::Coordinates::Directions::North:
+		case Coordinates::Directions::North:
 
 			bounding_box[0].z -= leaf_nodes * m_LeafNodeSide;
 			bounding_box[1].z -= leaf_nodes * m_LeafNodeSide;
 
 			break;
-		case Dependencies::Coordinates::Directions::South:
+		case Coordinates::Directions::South:
 
 			bounding_box[0].z += leaf_nodes * m_LeafNodeSide;
 			bounding_box[1].z += leaf_nodes * m_LeafNodeSide;
 
 			break;
-		case Dependencies::Coordinates::Directions::East:
+		case Coordinates::Directions::East:
 
 			bounding_box[0].x += leaf_nodes * m_LeafNodeSide;
 			bounding_box[1].x += leaf_nodes * m_LeafNodeSide;
 
 			break;
-		case Dependencies::Coordinates::Directions::West:
+		case Coordinates::Directions::West:
 
 			bounding_box[0].x -= leaf_nodes * m_LeafNodeSide;
 			bounding_box[1].x -= leaf_nodes * m_LeafNodeSide;
@@ -760,7 +760,7 @@ namespace DataStructures {
 					items.push_back((it));
 				}
 			}
-			else if (is_leaf_node() && m_Position.intersect2(area))
+			else if (is_leaf_node() && m_Position.intersects2(area))
 			{
 				for (const auto& it : m_Item)
 				{
@@ -775,7 +775,7 @@ namespace DataStructures {
 			if (m_Children[i])
 			{
 				//Checking for overlapping
-				if (m_ChildrenBounds[i].intersect2(area))
+				if (m_ChildrenBounds[i].intersects2(area))
 				{
 					m_Children[i]->recursive_dfs(area, items);
 				}
@@ -785,7 +785,7 @@ namespace DataStructures {
 	}
 
 	template<typename T>
-	Dependencies::Tree::Location<T> QuadTree<T>::recursive_insert(T object, Collisions::AABB area)
+	Trees::Location<T> QuadTree<T>::recursive_insert(T object, Collisions::AABB area)
 	{
 		//Checking whether the children can contain the item
 		for (uint8_t i = 0; i < NUMBER_OF_CHILDREN; i++)

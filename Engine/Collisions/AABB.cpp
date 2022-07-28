@@ -93,7 +93,7 @@ namespace Collisions {
     bool AABB::contains(AABB& compared)
     {
         //Checking if the the other aabb can be possibly contained 
-        if (!intersect2(compared)) return false;
+        if (!intersects2(compared)) return false;
 
         //Getting the data that is needed for calculations
         std::array<glm::vec3, 2> aabb_minmax = compared.bounding_region();
@@ -133,7 +133,7 @@ namespace Collisions {
     }
 
 
-    bool AABB::contains(glm::vec3 compared)
+    bool AABB::contains_a_point(glm::vec3 compared)
     {
         return ((compared.x > m_MinMax[0].x && compared.x < m_MinMax[1].x) &&
             (compared.y > m_MinMax[0].y && compared.y < m_MinMax[1].y) &&
@@ -142,7 +142,7 @@ namespace Collisions {
 
 
     //Only one point has to touch the other bounding box to return true
-    bool AABB::intersect1(AABB& compared)
+    bool AABB::intersects1(AABB& compared)
     {
         //Variables for storing the needed comparsion data
         std::array<glm::vec3, 2> bounding_region = compared.bounding_region();
@@ -167,7 +167,7 @@ namespace Collisions {
     }
 
 
-    bool AABB::intersect2(AABB& compared)
+    bool AABB::intersects2(AABB& compared)
     {
         std::array<glm::vec3, 2> bounding_box = compared.bounding_region();
 
@@ -177,7 +177,7 @@ namespace Collisions {
     }
 
 
-    bool AABB::strict_intersect(AABB& compared)
+    bool AABB::intersects_strictly(AABB& compared)
     {
 
         std::array<glm::vec3, 2> bounding_box = compared.bounding_region();
@@ -185,6 +185,54 @@ namespace Collisions {
         return (bounding_box[0].x < m_MinMax[1].x && bounding_box[1].x > m_MinMax[0].x) &&
             (bounding_box[0].y < m_MinMax[1].y && bounding_box[1].y > m_MinMax[0].y) &&
             (bounding_box[0].z > m_MinMax[1].z && bounding_box[1].z < m_MinMax[0].z);
+    }
+
+
+    bool AABB::left_collision(AABB& object)
+    {
+
+
+        return false;
+    }
+
+
+    bool AABB::right_collision(AABB& object)
+    {
+
+
+        return false;
+    }
+
+
+    bool AABB::front_collision(AABB& object)
+    {
+
+
+        return false;
+    }
+
+
+    bool AABB::back_collision(AABB& object)
+    {
+
+
+        return false;
+    }
+
+
+    bool AABB::top_collision(AABB& object)
+    {
+
+
+        return false;
+    }
+
+
+    bool AABB::bottom_collision(AABB& object)
+    {
+
+
+        return false;
     }
 
 

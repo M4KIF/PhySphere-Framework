@@ -116,9 +116,6 @@
     <ClInclude Include="Engine\Input\KeyboardInput.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\VoxelWorldCreation\Fundamental Elements\Block.h">
-      <Filter>Pliki nagłówkowe</Filter>
-    </ClInclude>
     <ClInclude Include="Engine\VoxelWorldCreation\World Generator\ChunkGenerator.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
@@ -206,7 +203,7 @@
     <ClInclude Include="Engine\DataStructures\ContainedQuadTree.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\DataStructures\Dependencies\Dependencies.h">
+    <ClInclude Include="Engine\Dependencies\Dependencies.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
   </ItemGroup>

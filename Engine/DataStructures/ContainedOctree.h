@@ -27,7 +27,7 @@ namespace DataStructures {
 		T item;
 
 		//The location to the container inside Octree that holds the iterator to this exact element above
-		Dependencies::Tree::Location<typename std::list<OctreeItem<T>>::iterator> item_position;
+		Trees::Location<typename std::list<OctreeItem<T>>::iterator> item_position;
 	};
 
 	template<typename T>
@@ -75,8 +75,8 @@ namespace DataStructures {
 		typename std::list<T>::iterator cend();
 
 		//Search functions
-		void dfs(Collisions::AABB& area, typename std::list<T>::iterator& items);
-		void bfs(Collisions::AABB& area, typename std::list<T>::iterator& items);
+		void dfs(Collisions::AABB& area, std::list<typename OctreeContainer::iterator>& items);
+		void bfs(Collisions::AABB& area, std::list<typename OctreeContainer::iterator>& items);
 		bool contains(Collisions::AABB& area);
 
 		/*
@@ -91,7 +91,7 @@ namespace DataStructures {
 		* Space altering
 		*/
 
-		void shift(size_t leaf_nodes, Dependencies::Coordinates::Directions direction, std::list<std::pair<T, Collisions::AABB>>& returned_data); //TODO
+		void shift(size_t leaf_nodes, Coordinates::Directions direction, std::list<std::pair<T, Collisions::AABB>>& returned_data); //TODO
 
 	};
 
@@ -220,14 +220,14 @@ namespace DataStructures {
 
 
 	template<typename T>
-	void ContainedOctree<T>::dfs(Collisions::AABB& area, typename std::list<T>::iterator& items)
+	void ContainedOctree<T>::dfs(Collisions::AABB& area, std::list<typename OctreeContainer::iterator>& items)
 	{
 		m_Root.dfs(area, items);
 	}
 
 
 	template<typename T>
-	void ContainedOctree<T>::bfs(Collisions::AABB& area, typename std::list<T>::iterator& items)
+	void ContainedOctree<T>::bfs(Collisions::AABB& area, std::list<typename OctreeContainer::iterator>& items)
 	{
 		m_Root.bfs(area, items);
 	}
@@ -301,7 +301,7 @@ namespace DataStructures {
 	*/////////////////////
 
 	template<typename T>
-	void ContainedOctree<T>::shift(size_t leaf_nodes, Dependencies::Coordinates::Directions direction, std::list<std::pair<T, Collisions::AABB>>& returned_data)
+	void ContainedOctree<T>::shift(size_t leaf_nodes, Coordinates::Directions direction, std::list<std::pair<T, Collisions::AABB>>& returned_data)
 	{
 		//Storing the new coordinates for the tree
 		std::array<glm::vec3, 2> bounding_box = m_Root.aabb().bounding_region();
@@ -312,25 +312,25 @@ namespace DataStructures {
 		//Calculating the bounding box
 		switch (direction)
 		{
-		case Dependencies::Coordinates::Directions::North:
+		case Coordinates::Directions::North:
 
 			bounding_box[0].z -= leaf_nodes * leaf_side_length;
 			bounding_box[1].z -= leaf_nodes * leaf_side_length;
 
 			break;
-		case Dependencies::Coordinates::Directions::South:
+		case Coordinates::Directions::South:
 
 			bounding_box[0].z += leaf_nodes * leaf_side_length;
 			bounding_box[1].z += leaf_nodes * leaf_side_length;
 
 			break;
-		case Dependencies::Coordinates::Directions::East:
+		case Coordinates::Directions::East:
 
 			bounding_box[0].x += leaf_nodes * leaf_side_length;
 			bounding_box[1].x += leaf_nodes * leaf_side_length;
 
 			break;
-		case Dependencies::Coordinates::Directions::West:
+		case Coordinates::Directions::West:
 
 			bounding_box[0].x -= leaf_nodes * leaf_side_length;
 			bounding_box[1].x -= leaf_nodes * leaf_side_length;
