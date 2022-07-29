@@ -3,13 +3,13 @@
 #include<glad/glad.h>
 #include<glfw3.h>
 #include<glfw3native.h>
+#include<Libraries/THREADPOOL/BS_thread_pool.hpp>
 
 // Default Libraries
 #include<iostream>
 #include<typeinfo>
 #include<iterator>
 #include<chrono>
-#include<thread>
 
 // Game Files
 #include<Engine/DataStructures/Octree.h>
@@ -265,7 +265,7 @@ int main(void)
 
     Collisions::AABB chunk_border(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(16.0f, 16.0f, -16.0f));
     chunk_border.update_position(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(16.0f, 16.0f, -16.0f));
-    DataStructures::ContainedOctree<int> chunk1(chunk_border, 5, 1);
+    DataStructures::ContainedOctree<int> chunk1(chunk_border, 4, 1);
 
     dimensions = chunk1.aabb().bounding_region();
 
@@ -281,15 +281,15 @@ int main(void)
 
     // t1 = high_resolution_clock::now();
 
-    //for (int i = 0; i < 32; i++)
-    //    for (int j = 0; j < 32; j++)
-    //        for (int k = 0; k < 32; k++)
-    //        {
-    //            block.update_position(glm::vec3((minimum.x + k), (minimum.y + i), (minimum.z - j)), glm::vec3((maximum.x + k), (maximum.y + i), (maximum.z - j)));
-    //            chunk1.insert(rand(), block);
-    //            //if (chunk_position.contains(block)) how_much_fits++;
-    //            //chunk2.push_back(rand());
-    //        }
+    for (int i = 0; i < 16; i++)
+        for (int j = 0; j < 16; j++)
+            for (int k = 0; k < 16; k++)
+            {
+                block.update_position(glm::vec3((minimum.x + k), (minimum.y + i), (minimum.z - j)), glm::vec3((maximum.x + k), (maximum.y + i), (maximum.z - j)));
+                chunk1.insert(rand(), block);
+                //if (chunk_position.contains(block)) how_much_fits++;
+                //chunk2.push_back(rand());
+            }
 
     //std::list<typename std::list<DataStructures::OctreeItem<int>>::iterator> data;
     Collisions::AABB search(glm::vec3(15.0f, 13.0f, -11.0f), glm::vec3(16.0f, 14.0f, -12.0f));
@@ -322,9 +322,6 @@ int main(void)
 
     std::cout << ms_int.count() << "ms\n";
     std::cout << ms_double.count() << "ms\n";
-
-
-    
     
 
     for(int i = 0; i < 32; i++)
@@ -386,7 +383,198 @@ int main(void)
     DataStructures::QuadTree<int> quad({ glm::vec3(-256.0f, 0.0f, 256.0f), glm::vec3(256.0f, 256.0f, -256.0f) }, 1, 32);
 
 
+    ///Further testing
+
+   
+
+    BS::thread_pool pool(3);
+    //jaja.shift, 1, Coordinates::Directions::North, returning
+
+    //std::cout << " Before threading: " << jaja.size() << "\n";
+
+    t1 = high_resolution_clock::now();
+
+   // pool.push_task([&jaja](int length, Coordinates::Directions direction, std::list<std::pair<int, Collisions::AABB>> items)
+     //   -> void {jaja.shift(length, direction, items); }, 3, Coordinates::Directions::North, returning);
+
+    chunk_border.update_position(glm::vec3(-256.0f, 0.0f, 0.0f), glm::vec3(0.0f, 256.0f, -256.0f));
+    DataStructures::ContainedOctree<int> threaded1(chunk_border, 3, 32);
+    chunk_border.update_position(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(256.0f, 256.0f, -256.0f));
+    DataStructures::ContainedOctree<int> threaded2(chunk_border, 3, 32);
+    chunk_border.update_position(glm::vec3(-256.0f, 0.0f, 256.0f), glm::vec3(0.0f, 256.0f, 0.0f));
+    DataStructures::ContainedOctree<int> threaded3(chunk_border, 3, 32);
+    chunk_border.update_position(glm::vec3(0.0f, 0.0f, 256.0f), glm::vec3(256.0f, 256.0f, 0.0f));
+    DataStructures::ContainedOctree<int> threaded4(chunk_border, 3, 32);
+
+    dimensions = threaded1.aabb().bounding_region();
+
+    minimum = dimensions[0];
+    maximum = glm::vec3(dimensions[0].x + 1.0f, dimensions[0].y + 1.0f, dimensions[0].z - 1.0f);
+
+    for (int i = 0; i < 8; i++)
+        for (int j = 0; j < 8; j++)
+            for (int k = 0; k < 8; k++)
+            {
+                block.update_position(glm::vec3((minimum.x + 32 * k), (minimum.y + 32 * i), (minimum.z - 32 * j)), glm::vec3((maximum.x + 32 * k), (maximum.y + 32 * i), (maximum.z - 32 * j)));
+                threaded1.insert(rand(), block);
+            }
+
+    dimensions = threaded2.aabb().bounding_region();
+
+    minimum = dimensions[0];
+    maximum = glm::vec3(dimensions[0].x + 1.0f, dimensions[0].y + 1.0f, dimensions[0].z - 1.0f);
+
+    for (int i = 0; i < 8; i++)
+        for (int j = 0; j < 8; j++)
+            for (int k = 0; k < 8; k++)
+            {
+                block.update_position(glm::vec3((minimum.x + 32 * k), (minimum.y + 32 * i), (minimum.z - 32 * j)), glm::vec3((maximum.x + 32 * k), (maximum.y + 32 * i), (maximum.z - 32 * j)));
+                threaded2.insert(rand(), block);
+
+            }
+
+    dimensions = threaded3.aabb().bounding_region();
+
+    minimum = dimensions[0];
+    maximum = glm::vec3(dimensions[0].x + 1.0f, dimensions[0].y + 1.0f, dimensions[0].z - 1.0f);
+
+    for (int i = 0; i < 8; i++)
+        for (int j = 0; j < 8; j++)
+            for (int k = 0; k < 8; k++)
+            {
+                block.update_position(glm::vec3((minimum.x + 32 * k), (minimum.y + 32 * i), (minimum.z - 32 * j)), glm::vec3((maximum.x + 32 * k), (maximum.y + 32 * i), (maximum.z - 32 * j)));
+                threaded3.insert(rand(), block);
+            }
+
+    dimensions = threaded4.aabb().bounding_region();
+
+    minimum = dimensions[0];
+    maximum = glm::vec3(dimensions[0].x + 1.0f, dimensions[0].y + 1.0f, dimensions[0].z - 1.0f);
+
+    for (int i = 0; i < 8; i++)
+        for (int j = 0; j < 8; j++)
+            for (int k = 0; k < 8; k++)
+            {
+                block.update_position(glm::vec3((minimum.x + 32 * k), (minimum.y + 32 * i), (minimum.z - 32 * j)), glm::vec3((maximum.x + 32 * k), (maximum.y + 32 * i), (maximum.z - 32 * j)));
+                threaded4.insert(rand(), block);
+            }
+
+    //returning.clear();
+
+    std::cout << " Before threading, quad1: " << threaded1.size() << "\n";
+    std::cout << " Before threading, quad2: " << threaded2.size() << "\n";
+    std::cout << " Before threading, quad3: " << threaded3.size() << "\n";
+    std::cout << " Before threading, quad4: " << threaded4.size() << "\n";
+
+    t1 = high_resolution_clock::now();
+
+    returning.clear();
+    pool.push_task([&threaded1](int length, Coordinates::Directions direction, std::list<std::pair<int, Collisions::AABB>> items)
+        -> void {threaded1.shift(length, direction, items); }, 1, Coordinates::Directions::North, returning);
+    returning.clear();
+    pool.push_task([&threaded2](int length, Coordinates::Directions direction, std::list<std::pair<int, Collisions::AABB>> items)
+        -> void {threaded2.shift(length, direction, items); }, 1, Coordinates::Directions::North, returning);
+    returning.clear();
+    pool.push_task([&threaded3](int length, Coordinates::Directions direction, std::list<std::pair<int, Collisions::AABB>> items)
+        -> void {threaded3.shift(length, direction, items); }, 1, Coordinates::Directions::North, returning);
+    returning.clear();
+    pool.push_task([&threaded4](int length, Coordinates::Directions direction, std::list<std::pair<int, Collisions::AABB>> items)
+        -> void {threaded4.shift(length, direction, items); }, 1, Coordinates::Directions::North, returning);
+
+    //pool.submit([&jaja](int length, Coordinates::Directions direction, std::list<std::pair<int, Collisions::AABB>> items)
+        //{jaja.shift(length, direction, items); }, 3, Coordinates::Directions::North, returning);
+
+    pool.wait_for_tasks();
+
+
+    t2 = high_resolution_clock::now();
+
+    /* Getting number of milliseconds as an integer. */
+    ms_int = duration_cast<milliseconds>(t2 - t1);
+
+    /* Getting number of milliseconds as a double. */
+    ms_double = t2 - t1;
+
+    std::cout << ms_int.count() << "ms\n";
+    std::cout << ms_double.count() << "ms\n";
+
+    std::cout << "After threading, quad1: " << threaded1.size() << "\n";
+    std::cout << "After threading, quad2: " << threaded2.size() << "\n";
+    std::cout << "After threading, quad3: " << threaded3.size() << "\n";
+    std::cout << "After threading, quad4: " << threaded4.size() << "\n";
+
+    //std::cout << " Before: " << jaja.size() << "\n";
+
+    //std::list<std::pair<int, Collisions::AABB>> x;
+    //jaja.shift(3, Coordinates::Directions::North, x);
+
+    //std::cout << " After: " << jaja.size() << "\n";
+
     // Game Loop itself
+
+    //Spllitting loops into tasks
+
+    t1 = high_resolution_clock::now();
+
+    threaded4.clear();
+
+    auto loop_lambda = [&block, &threaded4, &minimum, &maximum](const int a, const int b)
+    {
+        /*
+        * For it to work correctly I have to flatten the loop and use modulos to get the needed values
+        */
+
+        for (int i = a; i < b; i++)
+            for (int j = a; j < b; j++)
+                for (int k = a; k < b; k++)
+                {
+                    block.update_position(glm::vec3((minimum.x + 32 * k), (minimum.y + 32 * i), (minimum.z - 32 * j)), glm::vec3((maximum.x + 32 * k), (maximum.y + 32 * i), (maximum.z - 32 * j)));
+                    threaded4.insert(rand(), block);
+                }
+    };
+
+    pool.parallelize_loop(0, 16, loop_lambda, 2);
+
+    pool.wait_for_tasks();
+
+    t2 = high_resolution_clock::now();
+
+    std::cout << "Size max: " << threaded4.max_size() << "\n";
+    std::cout << "After paralelization of the loop: " << threaded4.size() << "\n";
+
+    /* Getting number of milliseconds as an integer. */
+    ms_int = duration_cast<milliseconds>(t2 - t1);
+
+    /* Getting number of milliseconds as a double. */
+    ms_double = t2 - t1;
+
+    std::cout << ms_int.count() << "ms\n";
+    std::cout << ms_double.count() << "ms\n";
+
+    t1 = high_resolution_clock::now();
+
+    threaded4.clear();
+
+    for (int i = 0; i < 8; i++)
+        for (int j = 0; j < 8; j++)
+            for (int k = 0; k < 8; k++)
+            {
+                block.update_position(glm::vec3((minimum.x + 32 * k), (minimum.y + 32 * i), (minimum.z - 32 * j)), glm::vec3((maximum.x + 32 * k), (maximum.y + 32 * i), (maximum.z - 32 * j)));
+                threaded4.insert(rand(), block);
+            }
+
+    t2 = high_resolution_clock::now();
+
+    std::cout << "After single threaded loop: " << threaded4.size() << "\n";
+
+    /* Getting number of milliseconds as an integer. */
+    ms_int = duration_cast<milliseconds>(t2 - t1);
+
+    /* Getting number of milliseconds as a double. */
+    ms_double = t2 - t1;
+
+    std::cout << ms_int.count() << "ms\n";
+    std::cout << ms_double.count() << "ms\n";
 
     while (!glfwWindowShouldClose(window))
     {

@@ -63,6 +63,7 @@ namespace OpenGL {
 namespace Elements {
 
 	enum class Blocks : unsigned short int {
+		Air = 0,
 		Indestructible = 1,
 		Grass,
 		Stone,

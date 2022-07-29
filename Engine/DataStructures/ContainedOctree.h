@@ -79,6 +79,9 @@ namespace DataStructures {
 		void bfs(Collisions::AABB& area, std::list<typename OctreeContainer::iterator>& items);
 		bool contains(Collisions::AABB& area);
 
+		//Others
+		std::vector<T> items();
+
 		/*
 		* Modifiers
 		*/
@@ -237,6 +240,20 @@ namespace DataStructures {
 	bool ContainedOctree<T>::contains(Collisions::AABB& area)
 	{
 		m_Root.contains(area);
+	}
+
+
+	template<typename T>
+	std::vector<T> ContainedOctree<T>::items()
+	{
+		//Stores the found data
+		std::vector<T> Items;
+
+		//Pushing available items to the vector
+		for (const auto& it : m_Items)
+		{
+			Items.push_back(it->item);
+		}
 	}
 
 

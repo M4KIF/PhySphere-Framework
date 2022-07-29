@@ -77,6 +77,9 @@ namespace DataStructures {
 		void bfs(Collisions::AABB& area, typename std::list<T>::iterator& items);
 		bool contains(Collisions::AABB& area);
 
+		//Others
+		std::vector<T> items();
+
 		/*/////////
 		* Modifiers
 		*//////////
@@ -228,6 +231,20 @@ namespace DataStructures {
 	bool ContainedQuadTree<T>::contains(Collisions::AABB& area)
 	{
 		m_Root.contains(area);
+	}
+
+
+	template<typename T>
+	std::vector<T> ContainedQuadTree<T>::items()
+	{
+		//Stores the found data
+		std::vector<T> Items;
+
+		//Pushing available items to the vector
+		for (const auto& it : m_Items)
+		{
+			Items.push_back(it->item);
+		}
 	}
 
 

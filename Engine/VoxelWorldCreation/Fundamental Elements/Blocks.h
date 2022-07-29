@@ -45,10 +45,13 @@ namespace World {
 		switch (block)
 		{
 		case Elements::Blocks::Stone:
+
 			break;
 		case Elements::Blocks::Grass:
+
 			break;
 		case Elements::Blocks::Indestructible:
+
 			break;
 		}
 	}

@@ -1,6 +1,7 @@
 #pragma once
 
 //Custom Libraries
+#include<Libraries/THREADPOOL/BS_thread_pool.hpp>
 
 //Default Libraries
 #include<list>
@@ -106,6 +107,8 @@ namespace DataStructures {
 		// The flag set
 		bool m_IsLeaf = false;
 		bool m_NodeReady = false;
+		bool m_IsRoot = false;
+		bool m_MultiThread = false;
 
 		//Item that the node is storing. Can become anything that the programmer wants it to
 		std::list<T> m_Item;
@@ -192,6 +195,8 @@ namespace DataStructures {
 		//Every octree starts as a leaf node before any subdivisions
 		m_IsLeaf = true;
 		m_NodeReady = true;
+		m_IsRoot = true;
+		m_MultiThread = true;
 
 		//Proceeds to subdivision
 		recursive_subdivide();
@@ -262,6 +267,7 @@ namespace DataStructures {
 			//If yes, then adds one to count
 			count += m_Item.size();
 		}
+
 		//Iterates recursively through all of the octants
 		for (int i = 0; i < NUMBER_OF_OCTANTS; i++)
 		{
