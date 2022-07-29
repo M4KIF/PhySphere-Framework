@@ -113,7 +113,7 @@ int main(void)
         std::cout << "\nWartosc 1: " << *it << "\n";
     }
 
-    std::cout << "Tyle naliczy³o w teorii: " << how_much_fits << "\n";
+    std::cout << "Tyle naliczyï¿½o w teorii: " << how_much_fits << "\n";
 
     std::cout << "\nTyle weszlo w size: " << chunk.size() << "\n";
 
@@ -123,7 +123,6 @@ int main(void)
         << dimensions[1][0] << ", " << dimensions[1][1] << ", " << dimensions[1][2] << "\n";
 
 
-    std::pair<std::list<std::pair<int, nullptr_t>>, bool> resize_result;
     chunk.resize({ glm::vec3(16.0f, 0.0f, -16.0f), glm::vec3(32.0f, 16.0f, -32.0f) });
 
     dimensions = chunk.aabb().bounding_region();
@@ -144,7 +143,7 @@ int main(void)
                 //if (chunk_position.contains(block)) how_much_fits++;
             }
 
-    std::cout << "Tyle naliczy³o w teorii: " << how_much_fits << "\n";
+    std::cout << "Tyle naliczyï¿½o w teorii: " << how_much_fits << "\n";
 
     std::cout << "\nTyle weszlo w size: " << chunk.size() << "\n";
 
