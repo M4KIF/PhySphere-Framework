@@ -9,6 +9,7 @@
 #include<typeinfo>
 #include<iterator>
 #include<chrono>
+#include<thread>
 
 // Game Files
 #include<Engine/DataStructures/Octree.h>
@@ -223,7 +224,7 @@ int main(void)
 
     std::cout << "SIZE CONT: " << jaja.size() << "\n";
 
-    jaja.shift(3, Dependencies::Tree::MovementDirection::North, returning);
+    jaja.shift(3, Coordinates::Directions::North, returning);
 
     t2 = high_resolution_clock::now();
 
@@ -249,7 +250,7 @@ int main(void)
 
     //std::cout << "SIZE CONT: " << chunk.size() << "\n";
 
-    chunk.shift(3, Dependencies::Tree::MovementDirection::North, returning);
+    chunk.shift(3, Coordinates::Directions::North, returning);
 
     t2 = high_resolution_clock::now();
 
@@ -261,6 +262,86 @@ int main(void)
 
     std::cout << ms_int.count() << "ms\n";
     std::cout << ms_double.count() << "ms\n";
+
+    Collisions::AABB chunk_border(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(16.0f, 16.0f, -16.0f));
+    chunk_border.update_position(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(16.0f, 16.0f, -16.0f));
+    DataStructures::ContainedOctree<int> chunk1(chunk_border, 5, 1);
+
+    dimensions = chunk1.aabb().bounding_region();
+
+    std::cout << "Dimensions are: " << dimensions[0][0] << ", " << dimensions[0][1] << ", " << dimensions[0][2] << "\n"
+        << dimensions[1][0] << ", " << dimensions[1][1] << ", " << dimensions[1][2] << "\n";
+
+    minimum = dimensions[0];
+    maximum = glm::vec3(dimensions[0].x + 1.0f, dimensions[0].y + 1.0f, dimensions[0].z - 1.0f);
+
+    std::vector<int> chunk2;
+    //chunk2.reserve(32 * 32 * 32);
+    std::array<int, 32*32*32> chunk3;
+
+    // t1 = high_resolution_clock::now();
+
+    //for (int i = 0; i < 32; i++)
+    //    for (int j = 0; j < 32; j++)
+    //        for (int k = 0; k < 32; k++)
+    //        {
+    //            block.update_position(glm::vec3((minimum.x + k), (minimum.y + i), (minimum.z - j)), glm::vec3((maximum.x + k), (maximum.y + i), (maximum.z - j)));
+    //            chunk1.insert(rand(), block);
+    //            //if (chunk_position.contains(block)) how_much_fits++;
+    //            //chunk2.push_back(rand());
+    //        }
+
+    //std::list<typename std::list<DataStructures::OctreeItem<int>>::iterator> data;
+    Collisions::AABB search(glm::vec3(15.0f, 13.0f, -11.0f), glm::vec3(16.0f, 14.0f, -12.0f));
+
+   
+
+    //chunk1.dfs(search, data);
+
+    //for (const auto& it : data)
+    //{
+    //    std::cout << it->item << "\n";
+    //}
+
+    //chunk_border.intersects2(chunk1.aabb());
+
+    t1 = high_resolution_clock::now();
+
+    for (int i = 0; i < 32768; i++)
+    {
+        chunk3[i] = rand();
+    } 
+
+        t2 = high_resolution_clock::now();
+
+    /* Getting number of milliseconds as an integer. */
+    ms_int = duration_cast<milliseconds>(t2 - t1);
+
+    /* Getting number of milliseconds as a double. */
+    ms_double = t2 - t1;
+
+    std::cout << ms_int.count() << "ms\n";
+    std::cout << ms_double.count() << "ms\n";
+
+
+    
+    
+
+    for(int i = 0; i < 32; i++)
+        for(int j = 0; j < 32; j++)
+            for (int k = 0; k < 32; k++)
+            {
+                Collisions::AABB temp(glm::vec3((minimum.x + k), (minimum.y + i), (minimum.z - j)), glm::vec3((maximum.x + k), (maximum.y + i), (maximum.z - j)));
+                if (temp.contains(search))
+                {
+                    std::cout << "\n" << chunk3[256 * i + 16 * j + k] << "\n";
+                    break;
+                }
+                    
+            }
+
+
+
 
 
     //shift.clear();

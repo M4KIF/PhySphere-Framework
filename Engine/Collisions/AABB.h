@@ -69,15 +69,26 @@ namespace Collisions {
 		BoxCoordinates bounding_region();
 		glm::vec3 dimensions();
 
-		/*//////////////
-		* / Collisions /
-		*///////////////
+		/*////////////////////
+		* / Basic Collisions /
+		*/////////////////////
 
-		bool contains(AABB& compared); //Contains the whole object
-		bool contains(glm::vec3 compared);
-		bool intersect1(AABB& comapred); //Either contains or colides partly(side to side) or totally
-		bool intersect2(AABB& comapred);
-		bool strict_intersect(AABB& comapred); //Either contains or colides totally
+		bool contains(AABB& object); //Contains the whole object
+		bool contains_a_point(glm::vec3 object);
+		bool intersects1(AABB& object); //Either contains or colides partly(side to side) or totally
+		bool intersects2(AABB& object);
+		bool intersects_strictly(AABB& object); //Either contains or colides totally
+
+		/*//////////////////////
+		* / Precise Collisions /
+		*///////////////////////
+
+		bool left_collision(AABB& object);
+		bool right_collision(AABB& object);
+		bool front_collision(AABB& object);
+		bool back_collision(AABB& object);
+		bool top_collision(AABB& object);
+		bool bottom_collision(AABB& object);
 
 		/*/////////////
 		* / Modifiers /

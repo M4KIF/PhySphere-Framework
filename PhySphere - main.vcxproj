@@ -187,14 +187,13 @@
     <ClInclude Include="Engine\DataStructures\ContainedQuadTree.h" />
     <ClInclude Include="Engine\Collisions\AABB.h" />
     <ClInclude Include="Engine\DataStructures\ContainedOctree.h" />
-    <ClInclude Include="Engine\DataStructures\Dependencies\Dependencies.h" />
+    <ClInclude Include="Engine\Dependencies\Dependencies.h" />
     <ClInclude Include="Engine\VoxelWorldCreation\World Generator\BiomeDesigner.h" />
     <ClInclude Include="Engine\VoxelWorldCreation\World Generator\DesertGenerator.h" />
     <ClInclude Include="Engine\Rendering\BufferManager.h" />
     <ClInclude Include="Engine\VoxelWorldCreation\Fundamental Elements\ChunkTree.h" />
     <ClInclude Include="Engine\VoxelWorldCreation\Fundamental Elements\Blocks.h" />
     <ClInclude Include="Engine\VoxelWorldCreation\World Generator\ChunkGenerator.h" />
-    <ClInclude Include="Engine\VoxelWorldCreation\Fundamental Elements\Block.h" />
     <ClInclude Include="Engine\VoxelWorldCreation\Fundamental Elements\Chunk.h" />
     <ClInclude Include="Engine\Rendering\Shader.h" />
     <ClInclude Include="Engine\Input\KeyboardInput.h" />

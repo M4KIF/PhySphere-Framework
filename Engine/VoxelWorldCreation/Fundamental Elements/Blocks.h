@@ -1,94 +1,56 @@
 #pragma once
 
-// Game Files
-#include<Engine/WorldCreation/Fundamental Elements/Block.h>
+//Standard libraries
+
+//Custom libraries
+#include<Libraries/GLM/glm.hpp>
+
+//Engine libraries
+#include<Engine/Dependencies/Dependencies.h>
+
 
 /*
-* Here there are the classes that represent block which are inherited from one main "Block" class,
-* they all have the same parameters and the difference lays in the values themselves. This implementation 
-* targets the ease of comparing blocks by using typeid.
+* A simple data structure that makes use of the Material struct, an block enum 
+* and a few simple methods that return information about the blocks
 */
 
-class Air : public World::Block {
-public:
 
-	// Constructors and a Virtual destructor
+namespace World {
 
-	Air(void) : Block({ glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), 0.0f }) { m_Toughness = 1; };
-	virtual ~Air(void) {};
 
-	// Place for other polimorphic methods
+	class BlockInfo {
 
-};
 
-class Indestructible : public World::Block {
-public:
+	protected:
 
-	// Constructors and a Virtual destructor
+		/*Texture atlas has to be here, so the methods can return complete information about
+		any block and make it ready to be drawn to the screen*/
 
-	Indestructible(void) : Block({ glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), 0.0f }) {};
-	virtual ~Indestructible(void) {};
+	public:
 
-	// Place for other polimorphic methods
+		/*Initialisation*/
+		BlockInfo() {};
+		~BlockInfo() {};
 
-};
+		/*Information methods*/
+		OpenGL::Material get_block_material(Elements::Blocks block);
+		Elements::BlockProperties get_block_properties(Elements::Blocks block);
+		uint8_t get_block_toughness(Elements::Blocks block);
 
-class Stone : public World::Block {
-public:
+	};
 
-	// Constructors and a Virtual destructor
 
-	Stone(void) : Block({ glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), 0.0f }) {};
-	virtual ~Stone(void) {};
+	OpenGL::Material get_block_info(Elements::Blocks block)
+	{
+		switch (block)
+		{
+		case Elements::Blocks::Stone:
+			break;
+		case Elements::Blocks::Grass:
+			break;
+		case Elements::Blocks::Indestructible:
+			break;
+		}
+	}
 
-	// Place for other polimorphic methods
-
-};
-
-class Grass : public World::Block {
-public:
-
-	// Constructors and a Virtual destructor
-
-	Grass(void) : Block({ glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), 0.0f }) {};
-	virtual ~Grass(void) {};
-
-	// Place for other polimorphic methods
-
-};
-
-class Sand : public World::Block {
-public:
-
-	// Constructors and a Virtual destructor
-
-	Sand(void) : Block({ glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), 0.0f }) {};
-	virtual ~Sand(void) {};
-
-	// Place for other polimorphic methods
-
-};
-
-class Wood : public World::Block {
-public:
-
-	// Constructors and a Virtual destructor
-
-	Wood(void) : Block({ glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), 0.0f }) {};
-	virtual ~Wood(void) {};
-
-	// Place for other polimorphic methods
-
-};
-
-class Leaf : public World::Block {
-public:
-
-	// Constructors and a Virtual destructor
-
-	Leaf(void) : Block({ glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), 0.0f }) {};
-	virtual ~Leaf(void) {};
-
-	// Place for other polimorphic methods
-
-};
+}

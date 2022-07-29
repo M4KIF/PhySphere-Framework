@@ -1,84 +1,45 @@
 #pragma once
 
-// Custom Libraries
-#include<Libraries/GLM/gtc/matrix_transform.hpp>
+//Standard libraries
 
-// Default Libraries
-#include<iostream>
-#include<typeinfo>
-#include<vector>
-#include<string>
+//Custom libraries
+#include<Libraries/GLM/glm.hpp>
 
-// Game Files
-#include<Engine/WorldCreation/Fundamental Elements/Blocks.h>
+//Engine libraries
+#include<Engine/Dependencies/Dependencies.h>
+#include<Engine/Collisions/AABB.h>
+
+//Constants
+#define CHUNK_SIZE 32
+
 
 /*
-* The 16x16x16 Chunk implementation that is meant to be lightweight.
-* I assume that the chunk coordinates are uniform top left corner of each chunk, 
-* rest of the coordinates are derived from that If needed.
-* This class has a field containing its ID, that is, a random generated 32 Bit hash code
-* by which the chunk can be later recognized in the runtime and saved or modified
+* 
 */
 
-// Macros for defining chunk constants
-
-#define CHUNK_SIDE_LENGTH 16
-
-//
-//
-//
 
 class Chunk {
+
+	using Position = Collisions::AABB;
+
 protected:
 
-	// Chunk unique ID
+	//Stores the Bounding Box of the chunk
+	Position m_Position;
 
-	std::string m_Identifier;
+	//Stores the block data
+	std::array<Elements::Blocks, CHUNK_SIZE* CHUNK_SIZE* CHUNK_SIZE> m_Blocks;
 
-	// Block data
-
-	std::vector<std::unique_ptr<Block>> m_BlockData;
-
-	// Chunk coordinates
-
-	glm::vec3 m_Position;
-
-	// Chunk state flags
-
-	bool m_IsPositionSet = false;
-	bool m_IsBlockDataGenerated = false;
-	bool m_IsVisible = false;
+	//
 
 public:
 
-	// Constructors and a Virtual destructor 
+	Chunk() {};
+	~Chunk() {};
 
-	Chunk(void) : m_Identifier(), m_BlockData(), m_Position(glm::vec3(0.0f)) {};
-	Chunk(glm::vec3 Position) : m_Identifier(), m_BlockData(), m_Position(Position) {};
-	~Chunk(void) {};
-
-	// Flag altering
-
-	inline void EnablePositionFlag(void) { m_IsPositionSet = true; }
-	inline void EnableBlockDataFlag(void) { m_IsBlockDataGenerated = true; }
-	inline void EnableVisibilityFlag(void) { m_IsVisible = true; }
-	//
-	inline void DisablePositionFlag(void) { m_IsPositionSet = false; }
-	inline void DisableBlockDataFlag(void) { m_IsBlockDataGenerated = false; }
-	inline void DisableVisibilityFlag(void) { m_IsVisible = false; }
-
-	// Methods for the chunk creating pipeline
-
-	std::vector<std::unique_ptr<Block>>* GetBlockDataRefference(void);
-	void SetBlockDataVector(void);
-
-	// Methods for the chunk meshing pipeline
-
-	bool CanBePassedFurther(void);
-
-	// Identifying the chunk at runtime
-
-	std::string GetChunkIdentifier(void);
-	glm::vec3 GetChunkPosition(void);
+	void update_position();
+	Collisions::AABB aabb();
+	Collisions::AABB find_collision(); //Searches for all aabb's taht collide with the given aabb, then I 
+	//Can check them and make me slide, fall, or get up to speed
 
 };
