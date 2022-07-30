@@ -1,3 +1,4 @@
+#pragma once
 
 // Custom Libraries
 #include<glad/glad.h>

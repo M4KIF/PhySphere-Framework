@@ -78,3 +78,15 @@ namespace Elements {
 	};
 
 }
+
+
+namespace Settings {
+
+	//Low = 8 chunks(1st level QuadTree), Med = 16(2nd level QuadTree and so on), High = 64, so the rise is exponential
+	enum class RenderDistance : unsigned short int {
+		Low = 1,
+		Medium = 2,
+		High = 3
+	}
+
+}

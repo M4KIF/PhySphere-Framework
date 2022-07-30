@@ -1,7 +1,6 @@
 #pragma once
 
 //Custom Libraries
-#include<Libraries/THREADPOOL/BS_thread_pool.hpp>
 
 //Default Libraries
 #include<list>
@@ -126,18 +125,23 @@ namespace DataStructures {
 		~Octree();
 
 		/*
-		* Capacity
+		* Dimensions && Position
 		*/
 
+		size_t min_dimensions();
 		size_t leaf_node_side_length();
 		Collisions::AABB& aabb();
 		OctantBoxes octants_positions();
+		void resize(Collisions::AABB area);
+
+		/*
+		* Capacity
+		*/
+
 		size_t size(); //OK
 		size_t max_size(); //OK
 		size_t depth(); //OK
 		size_t max_depth(); //OK
-		size_t min_dimensions();
-		void resize(Collisions::AABB area);
 		bool empty(); //OK
 
 		/*
@@ -158,7 +162,7 @@ namespace DataStructures {
 		void clear(); //OK 
 
 		/*
-		* Space altering
+		* Movement
 		*/
 
 		void shift(size_t leaf_nodes, Coordinates::Directions direction, std::list<std::pair<T, Collisions::AABB>>& returned_data); //TODO

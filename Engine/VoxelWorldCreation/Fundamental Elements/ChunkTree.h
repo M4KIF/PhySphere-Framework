@@ -24,11 +24,18 @@
 
 namespace World {
 
-
+	//The syntax resembles the Octree and Quadtree container syntax combined
 	class ChunkTree
 	{
 
 		using Position = Collisions::AABB;
+
+		/*
+		* Private member functions
+		*/
+
+		//Preprares the coordinates for Octrees from the Map position
+		void calculate_octrees_bounds();
 
 	protected:
 		
@@ -36,22 +43,71 @@ namespace World {
 		Position m_Area;
 		
 		//How much Octress will be processed
-		size_t m_Children_number;
+		size_t m_Octrees_Number;
 		
 		//Storing the children data
-		std::vector<DataStructures::ContainedOctree<Chunk>*> m_Children;
+		std::vector<DataStructures::ContainedOctree<Chunk>*> m_Octrees;
+
+		//Maximum depth of the map QuadTree
+		Settings::RenderDistance m_Map_Depth;
 
 		//The main part of the chunk grid, the 2D data storage
 		DataStructures::ContainedQuadTree<DataStructures::ContainedOctree<Chunk>*> m_Map;
 
 		//Flags
 
+		bool m_OctreesReady;
+		bool m_Shifting;
+
+
 	public:
 
+		/*
+		* Initialisation
+		*/
+
 		ChunkTree();
-		ChunkTree()
+		ChunkTree(Collisions::AABB area);
+		ChunkTree(Settings::RenderDistance value, Collisions::AABB area);
+		ChunkTree(const ChunkTree& copy);
+		~ChunkTree();
 
+		/*
+		* Dimensions && Position
+		*/
 
+		Collisions::AABB aabb();
+		std::vector<Collisions::AABB> octrees_aabb();
+		size_t current_render_distance();
+
+		/*
+		* Capacity
+		*/
+
+		size_t size();
+		bool empty();
+
+		/*
+		* Element access
+		*/
+
+		std::vector<DataStructures::ContainedOctree<Chunk>*> access_octrees();
+		std::vector<DataStructures::ContainedOctree<Chunk>*> dfs(Collisions::AABB area);
+		std::vector<DataStructures::ContainedOctree<Chunk>*> bfs(Collisions::AABB area);
+		bool contains(Collisions::AABB area);
+
+		/*
+		* Modifiers
+		*/
+
+		bool resize(CSettings::RenderDistance new_render_distance);
+		bool clear();
+
+		/*
+		* Movement
+		*/
+
+		void shift(size_t nodes_to_shift, Coordinates::Directions shifting_direction, std::list<std::pair<Chunk, Collisions::AABB>>& returned_data);
 
 	};
 

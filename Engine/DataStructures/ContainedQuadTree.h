@@ -3,8 +3,15 @@
 //Custom Libraries
 
 //Default Libraries
+#include<list>
+#include<queue>
+#include<memory>
+#include<iostream>
+#include<algorithm>
 
 //Game files
+#include<Engine/Collisions/AABB.h>
+#include<Engine/Dependencies/Dependencies.h>
 #include<Engine/DataStructures/QuadTree.h>
 
 
@@ -50,16 +57,22 @@ namespace DataStructures {
 		ContainedQuadTree(Collisions::AABB BoundingBox, size_t MaxDepth, size_t MinimumDimensions);
 		~ContainedQuadTree();
 
+		/*
+		* Dimensions & Position
+		*/
+
+		size_t min_dimensions();
+		Collisions::AABB& aabb();
+		void resize(Collisions::AABB area);
+
 		/*////////
 		* Capacity
 		*/////////
 
-		Collisions::AABB& aabb();
 		size_t size();
 		size_t max_size();
-		size_t min_dimensions();
+		size_t depth();
 		size_t max_depth();
-		void resize(Collisions::AABB area);
 		bool empty();
 
 		/*//////////////

@@ -53,15 +53,21 @@ namespace DataStructures {
 		~ContainedOctree();
 
 		/*
-		* Capacity
+		* Dimensions & Position
 		*/
 
+		size_t min_dimensions();
 		Collisions::AABB& aabb();
+		void resize(Collisions::AABB area);
+
+		/*////////
+		* Capacity
+		*/////////
+
 		size_t size();
 		size_t max_size();
-		size_t min_dimensions();
+		size_t depth();
 		size_t max_depth();
-		void resize(Collisions::AABB area);
 		bool empty();
 
 		/*
