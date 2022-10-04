@@ -34,7 +34,7 @@ namespace World {
 	//Returns the current size, without counting "empty" elements
 	size_t Chunk::size()
 	{
-		size_t size;
+		size_t size = 0;
 
 		for (uint16_t i = 0; i < m_Blocks.max_size(); i++)
 			if (m_Blocks[i] != Elements::Blocks::Air) size++;

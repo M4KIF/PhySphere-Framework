@@ -1,6 +1,8 @@
 #pragma once
 
 #include<Libraries/GLM/glm.hpp>
+#include<Engine/Collisions/AABB.h>
+#include<list>
 
 /*
 * Here are the declaration of all of the needed structs
@@ -87,6 +89,6 @@ namespace Settings {
 		Low = 1,
 		Medium = 2,
 		High = 3
-	}
+	};
 
 }
