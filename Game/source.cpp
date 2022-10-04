@@ -1,6 +1,6 @@
 #pragma once
 
-// Custom Libraries
+//Custom Libraries
 #include<glad/glad.h>
 #include<glfw3.h>
 #include<glfw3native.h>
