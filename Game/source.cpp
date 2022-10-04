@@ -6,13 +6,13 @@
 #include<glfw3native.h>
 #include<Libraries/THREADPOOL/BS_thread_pool.hpp>
 
-// Default Libraries
+//Default Libraries
 #include<iostream>
 #include<typeinfo>
 #include<iterator>
 #include<chrono>
 
-// Game Files
+//Game Files
 #include<Engine/DataStructures/Octree.h>
 #include<Engine/DataStructures/ContainedOctree.h>
 #include<Engine/DataStructures/QuadTree.h>
