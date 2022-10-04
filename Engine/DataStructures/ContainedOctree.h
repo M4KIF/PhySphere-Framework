@@ -245,7 +245,7 @@ namespace DataStructures {
 	template<typename T>
 	bool ContainedOctree<T>::contains(Collisions::AABB& area)
 	{
-		m_Root.contains(area);
+		return m_Root.contains(area);
 	}
 
 
@@ -302,6 +302,9 @@ namespace DataStructures {
 
 		//Deletes the original item from the list
 		m_Items.erase(item);
+
+		//
+		return false;
 	}
 
 
