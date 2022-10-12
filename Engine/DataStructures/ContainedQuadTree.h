@@ -11,7 +11,6 @@
 
 //Game files
 #include<Engine/Collisions/AABB.h>
-#include<Engine/Dependencies/Dependencies.h>
 #include<Engine/DataStructures/QuadTree.h>
 
 
@@ -22,7 +21,17 @@
 * optimisation. Inspired by the work of javidx9: "Quirky Quad Trees" series
 */
 
+namespace Trees {
 
+	template<typename T>
+	struct Location
+	{
+		typename std::list<T>* items_container = nullptr;
+		typename std::list<T>::iterator items_iterator;
+		typename Collisions::AABB aabb;
+	};
+
+}
 
 namespace DataStructures {
 

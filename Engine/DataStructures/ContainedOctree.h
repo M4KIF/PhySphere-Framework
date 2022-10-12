@@ -16,7 +16,17 @@
 * iterators to the items, It's cheaper* 
 */
 
+namespace Trees {
 
+	template<typename T>
+	struct Location
+	{
+		typename std::list<T>* items_container = nullptr;
+		typename std::list<T>::iterator items_iterator;
+		typename Collisions::AABB aabb;
+	};
+
+}
 
 namespace DataStructures {
 
