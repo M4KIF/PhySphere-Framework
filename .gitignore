@@ -17,7 +17,10 @@
 mono_crash.*
 
 # Build results
+<<<<<<< HEAD
 [Bb]uild
+=======
+>>>>>>> 59ed5ea9e876bddfa61d1bf3a06ad74684ecfa29
 
 # Visual Studio 2015/2017 cache/options directory
 .vs/
