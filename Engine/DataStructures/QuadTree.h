@@ -11,7 +11,6 @@
 
 //Game files
 #include<Engine/Collisions/AABB.h>
-#include<Engine/Dependencies/Dependencies.h>
 
 //Macros
 #define NUMBER_OF_CHILDREN 4
@@ -99,19 +98,24 @@ namespace DataStructures {
 		QuadTree(Collisions::AABB BoundingBox, size_t MaxDepth, size_t MinimumDimensions, size_t Depth);
 		~QuadTree();
 
+		/*
+		* Dimensions & Position
+		*/
+
+		size_t min_dimensions();
+		size_t leaf_node_side_length();
+		Collisions::AABB& aabb();
+		ChildrenBoxes children_positions();
+		void resize(Collisions::AABB area);
+
 		/*////////
 		* Capacity
 		*/////////
 
-		size_t leaf_node_side_length();
-		Collisions::AABB& aabb();
-		ChildrenBoxes children_positions();
 		size_t size();
 		size_t max_size();
-		size_t min_dimensions();
 		size_t depth();
 		size_t max_depth();
-		void resize(Collisions::AABB area);
 		bool empty();
 
 		/*//////////////

@@ -1,5 +1,7 @@
 #include "AABB.h"
 
+
+
 namespace Collisions {
 
     AABB::AABB()
@@ -90,63 +92,63 @@ namespace Collisions {
 
     //All of the points have to be inside the parent bb to return true
     //TODO: optimise this code.
-    bool AABB::contains(AABB& compared)
+    bool AABB::contains(AABB& object)
     {
         //Checking if the the other aabb can be possibly contained 
-        if (!intersects2(compared)) return false;
+        if (!intersects2(object)) return false;
 
         //Getting the data that is needed for calculations
-        std::array<glm::vec3, 2> aabb_minmax = compared.bounding_region();
+        std::array<glm::vec3, 2> aabb_minmax = object.bounding_region();
 
         std::array<glm::vec3, 2> parent_2d_plane;
-        std::array<glm::vec3, 2> compared_2d_plane;
+        std::array<glm::vec3, 2> object_2d_plane;
 
         //Calculating the lower plane
         parent_2d_plane[0] = m_MinMax[0];
         parent_2d_plane[1] = glm::vec3(m_MinMax[1].x, m_MinMax[0].y, m_MinMax[1].z);
 
-        compared_2d_plane[0] = aabb_minmax[0];
-        compared_2d_plane[1] = glm::vec3(aabb_minmax[1].x, aabb_minmax[0].y, aabb_minmax[1].z);
+        object_2d_plane[0] = aabb_minmax[0];
+        object_2d_plane[1] = glm::vec3(aabb_minmax[1].x, aabb_minmax[0].y, aabb_minmax[1].z);
 
         //Checking if it can be contained inside the bottom square of the cube
-        if (!((compared_2d_plane[0].x >= parent_2d_plane[0].x) &&
-            (compared_2d_plane[0].z <= parent_2d_plane[0].z) &&
-            (compared_2d_plane[1].x <= parent_2d_plane[1].x) &&
-            (compared_2d_plane[1].z >= parent_2d_plane[1].z) &&
-            (compared_2d_plane[1].y >= parent_2d_plane[1].y))) return false;
+        if (!((object_2d_plane[0].x >= parent_2d_plane[0].x) &&
+            (object_2d_plane[0].z <= parent_2d_plane[0].z) &&
+            (object_2d_plane[1].x <= parent_2d_plane[1].x) &&
+            (object_2d_plane[1].z >= parent_2d_plane[1].z) &&
+            (object_2d_plane[1].y >= parent_2d_plane[1].y))) return false;
 
         //Calculating the lower plane
         parent_2d_plane[0] = m_MinMax[0];
         parent_2d_plane[1] = glm::vec3(m_MinMax[1].x, m_MinMax[1].y, m_MinMax[1].z);
 
-        compared_2d_plane[0] = aabb_minmax[0];
-        compared_2d_plane[1] = glm::vec3(aabb_minmax[1].x, aabb_minmax[1].y, aabb_minmax[1].z);
+        object_2d_plane[0] = aabb_minmax[0];
+        object_2d_plane[1] = glm::vec3(aabb_minmax[1].x, aabb_minmax[1].y, aabb_minmax[1].z);
 
         //Checking if it can be contained inside the bottom square of the cube
-        if (!((compared_2d_plane[0].x >= parent_2d_plane[0].x) &&
-            (compared_2d_plane[0].z <= parent_2d_plane[0].z) &&
-            (compared_2d_plane[1].x <= parent_2d_plane[1].x) &&
-            (compared_2d_plane[1].z >= parent_2d_plane[1].z) &&
-            (compared_2d_plane[1].y <= parent_2d_plane[1].y))) return false;
+        if (!((object_2d_plane[0].x >= parent_2d_plane[0].x) &&
+            (object_2d_plane[0].z <= parent_2d_plane[0].z) &&
+            (object_2d_plane[1].x <= parent_2d_plane[1].x) &&
+            (object_2d_plane[1].z >= parent_2d_plane[1].z) &&
+            (object_2d_plane[1].y <= parent_2d_plane[1].y))) return false;
 
         return true;
     }
 
 
-    bool AABB::contains_a_point(glm::vec3 compared)
+    bool AABB::contains_a_point(glm::vec3 object)
     {
-        return ((compared.x > m_MinMax[0].x && compared.x < m_MinMax[1].x) &&
-            (compared.y > m_MinMax[0].y && compared.y < m_MinMax[1].y) &&
-            (compared.z < m_MinMax[0].z && compared.z > m_MinMax[1].z));
+        return ((object.x > m_MinMax[0].x && object.x < m_MinMax[1].x) &&
+            (object.y > m_MinMax[0].y && object.y < m_MinMax[1].y) &&
+            (object.z < m_MinMax[0].z && object.z > m_MinMax[1].z));
     }
 
 
     //Only one point has to touch the other bounding box to return true
-    bool AABB::intersects1(AABB& compared)
+    bool AABB::intersects1(AABB& object)
     {
         //Variables for storing the needed comparsion data
-        std::array<glm::vec3, 2> bounding_region = compared.bounding_region();
-        glm::vec3 dimensions = compared.dimensions();
+        std::array<glm::vec3, 2> bounding_region = object.bounding_region();
+        glm::vec3 dimensions = object.dimensions();
 
         //The absolute value between centers and checking for overlap
         glm::vec3 distance;
@@ -156,7 +158,7 @@ namespace Collisions {
 
         for (int i = 0; i < 3; i++)
         {
-            distance[i] = fabs(m_Center[i] - compared.center()[i]);
+            distance[i] = fabs(m_Center[i] - object.center()[i]);
 
             //Checking whether given coordinate overlaps
             if (!(distance[i] <= (sumedDimensions[i] * 0.5))) return false;
@@ -167,9 +169,9 @@ namespace Collisions {
     }
 
 
-    bool AABB::intersects2(AABB& compared)
+    bool AABB::intersects2(AABB& object)
     {
-        std::array<glm::vec3, 2> bounding_box = compared.bounding_region();
+        std::array<glm::vec3, 2> bounding_box = object.bounding_region();
 
         return (bounding_box[0].x <= m_MinMax[1].x && bounding_box[1].x >= m_MinMax[0].x) &&
             (bounding_box[0].y <= m_MinMax[1].y && bounding_box[1].y >= m_MinMax[0].y) &&
@@ -177,10 +179,10 @@ namespace Collisions {
     }
 
 
-    bool AABB::intersects_strictly(AABB& compared)
+    bool AABB::intersects_strictly(AABB& object)
     {
 
-        std::array<glm::vec3, 2> bounding_box = compared.bounding_region();
+        std::array<glm::vec3, 2> bounding_box = object.bounding_region();
 
         return (bounding_box[0].x < m_MinMax[1].x && bounding_box[1].x > m_MinMax[0].x) &&
             (bounding_box[0].y < m_MinMax[1].y && bounding_box[1].y > m_MinMax[0].y) &&
@@ -190,8 +192,6 @@ namespace Collisions {
 
     bool AABB::left_collision(AABB& object)
     {
-
-
         return false;
     }
 

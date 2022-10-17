@@ -1,4 +1,0 @@
-[2022-06-29 16:58:11] The Log file has been created
-[2022-06-29 16:58:11] Preparing the glfw and opengl context
-[2022-06-29 16:58:11] Setting up the rendering pipeline
-[2022-06-29 16:58:11] The renderer has been created

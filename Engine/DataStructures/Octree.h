@@ -11,7 +11,6 @@
 
 //Game files
 #include<Engine/Collisions/AABB.h>
-#include<Engine/Dependencies/Dependencies.h>
 
 //Macros
 #define MINIMUM_DIMENSION 1.0f
@@ -106,6 +105,8 @@ namespace DataStructures {
 		// The flag set
 		bool m_IsLeaf = false;
 		bool m_NodeReady = false;
+		bool m_IsRoot = false;
+		bool m_MultiThread = false;
 
 		//Item that the node is storing. Can become anything that the programmer wants it to
 		std::list<T> m_Item;
@@ -123,18 +124,23 @@ namespace DataStructures {
 		~Octree();
 
 		/*
-		* Capacity
+		* Dimensions && Position
 		*/
 
+		size_t min_dimensions();
 		size_t leaf_node_side_length();
 		Collisions::AABB& aabb();
 		OctantBoxes octants_positions();
+		void resize(Collisions::AABB area);
+
+		/*
+		* Capacity
+		*/
+
 		size_t size(); //OK
 		size_t max_size(); //OK
 		size_t depth(); //OK
 		size_t max_depth(); //OK
-		size_t min_dimensions();
-		void resize(Collisions::AABB area);
 		bool empty(); //OK
 
 		/*
@@ -155,7 +161,7 @@ namespace DataStructures {
 		void clear(); //OK 
 
 		/*
-		* Space altering
+		* Movement
 		*/
 
 		void shift(size_t leaf_nodes, Coordinates::Directions direction, std::list<std::pair<T, Collisions::AABB>>& returned_data); //TODO
@@ -192,6 +198,8 @@ namespace DataStructures {
 		//Every octree starts as a leaf node before any subdivisions
 		m_IsLeaf = true;
 		m_NodeReady = true;
+		m_IsRoot = true;
+		m_MultiThread = true;
 
 		//Proceeds to subdivision
 		recursive_subdivide();
@@ -262,6 +270,7 @@ namespace DataStructures {
 			//If yes, then adds one to count
 			count += m_Item.size();
 		}
+
 		//Iterates recursively through all of the octants
 		for (int i = 0; i < NUMBER_OF_OCTANTS; i++)
 		{

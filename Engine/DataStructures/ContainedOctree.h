@@ -16,7 +16,17 @@
 * iterators to the items, It's cheaper* 
 */
 
+namespace Trees {
 
+	template<typename T>
+	struct Location
+	{
+		typename std::list<T>* items_container = nullptr;
+		typename std::list<T>::iterator items_iterator;
+		typename Collisions::AABB aabb;
+	};
+
+}
 
 namespace DataStructures {
 
@@ -53,15 +63,21 @@ namespace DataStructures {
 		~ContainedOctree();
 
 		/*
-		* Capacity
+		* Dimensions & Position
 		*/
 
+		size_t min_dimensions();
 		Collisions::AABB& aabb();
+		void resize(Collisions::AABB area);
+
+		/*////////
+		* Capacity
+		*/////////
+
 		size_t size();
 		size_t max_size();
-		size_t min_dimensions();
+		size_t depth();
 		size_t max_depth();
-		void resize(Collisions::AABB area);
 		bool empty();
 
 		/*
@@ -78,6 +94,9 @@ namespace DataStructures {
 		void dfs(Collisions::AABB& area, std::list<typename OctreeContainer::iterator>& items);
 		void bfs(Collisions::AABB& area, std::list<typename OctreeContainer::iterator>& items);
 		bool contains(Collisions::AABB& area);
+
+		//Others
+		std::vector<T> items();
 
 		/*
 		* Modifiers
@@ -236,7 +255,21 @@ namespace DataStructures {
 	template<typename T>
 	bool ContainedOctree<T>::contains(Collisions::AABB& area)
 	{
-		m_Root.contains(area);
+		return m_Root.contains(area);
+	}
+
+
+	template<typename T>
+	std::vector<T> ContainedOctree<T>::items()
+	{
+		//Stores the found data
+		std::vector<T> Items;
+
+		//Pushing available items to the vector
+		for (const auto& it : m_Items)
+		{
+			Items.push_back(it->item);
+		}
 	}
 
 
@@ -279,6 +312,9 @@ namespace DataStructures {
 
 		//Deletes the original item from the list
 		m_Items.erase(item);
+
+		//
+		return false;
 	}
 
 

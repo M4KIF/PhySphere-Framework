@@ -1,5 +1,8 @@
 #pragma once
-class WorldMap
+
+
+
+class ChunkMap
 {
 };
 
