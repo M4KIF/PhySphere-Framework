@@ -13,6 +13,6 @@
 [submodule "Libraries/thread-pool"]
 	path = Libraries/thread-pool
 	url = https://github.com/bshoshany/thread-pool.git
-[submodule "Libraries/Libraries/IMGUI"]
-	path = Libraries/Libraries/IMGUI
+[submodule "Libraries/IMGUI/imgui"]
+	path = Libraries/IMGUI/imgui
 	url = https://github.com/ocornut/imgui.git
