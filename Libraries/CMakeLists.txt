@@ -31,7 +31,7 @@ if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/glm/CMakeLists.txt")
 endif()
 
 #Searching for IMGUI
-if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/IMGUI/imgui/CMakeLists.txt")
+if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/IMGUI/CMakeLists.txt")
     message(FATAL_ERROR "The submodules were not downloaded! GIT_SUBMODULE was turned off or failed. Please update submodules and try again.")
 endif()
 
