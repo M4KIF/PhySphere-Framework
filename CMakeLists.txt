@@ -32,12 +32,7 @@ if(NOT EXISTS "${PROJECT_SOURCE_DIR}/Libraries/glm/CMakeLists.txt")
 endif()
 
 #Searching for IMGUI
-if(NOT EXISTS "${PROJECT_SOURCE_DIR}/Libraries/imgui/CMakeLists.txt")
-    message(FATAL_ERROR "The submodules were not downloaded! GIT_SUBMODULE was turned off or failed. Please update submodules and try again.")
-endif()
-
-#Searching for PerlinNoise
-if(NOT EXISTS "${PROJECT_SOURCE_DIR}/Libraries/PerlinNoise/CMakeLists.txt")
+if(NOT EXISTS "${PROJECT_SOURCE_DIR}/Libraries/IMGUI/CMakeLists.txt")
     message(FATAL_ERROR "The submodules were not downloaded! GIT_SUBMODULE was turned off or failed. Please update submodules and try again.")
 endif()
 
@@ -58,12 +53,10 @@ add_subdirectory(Libraries/glfw)
 
 add_subdirectory(Libraries/GLAD)
 
-add_subdirectory(Libraries/glm)
+#add_subdirectory(Libraries/glm)
 
-add_subdirectory(Libraries/imgui)
+add_subdirectory(Libraries/IMGUI)
 
 add_subdirectory(Libraries/Collisions-library)
 
 add_subdirectory(Libraries/Spatial-Tree-Structures)
-
-add_subdirectory(Libraries/PerlinNoise)

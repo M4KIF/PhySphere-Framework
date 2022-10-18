@@ -1,9 +1,3 @@
-[submodule "Libraries/Spatial-Tree-Structures"]
-	path = Libraries/Spatial-Tree-Structures
-	url = https://github.com/M4KIF/Spatial-Tree-Structures.git
-[submodule "Libraries/Collisions-library"]
-	path = Libraries/Collisions-library
-	url = git@github.com:M4KIF/Collisions-library.git
 [submodule "Libraries/glm"]
 	path = Libraries/glm
 	url = https://github.com/g-truc/glm.git
