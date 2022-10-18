@@ -6,7 +6,7 @@ set (CMAKE_CXX_STANDARD 20)
 #Checking for git submodules updates, via checking the .gitmodules file and
 #pulling the modules that are written in it.
 find_package(Git QUIET)
-if(GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
+if(GIT_FOUND AND EXISTS "${CMAKE_SOURCE_DIR}/.git")
 # Update submodules as needed
     option(GIT_SUBMODULE "Check submodules during build" ON)
     if(GIT_SUBMODULE)
