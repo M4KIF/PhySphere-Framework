@@ -36,16 +36,6 @@ if(NOT EXISTS "${PROJECT_SOURCE_DIR}/Libraries/IMGUI/CMakeLists.txt")
     message(FATAL_ERROR "The submodules were not downloaded! GIT_SUBMODULE was turned off or failed. Please update submodules and try again.")
 endif()
 
-#Searching for Spatial-Tree-Structures
-if(NOT EXISTS "${PROJECT_SOURCE_DIR}/Libraries/Spatial-Tree-Structures/CMakeLists.txt")
-    message(FATAL_ERROR "The submodules were not downloaded! GIT_SUBMODULE was turned off or failed. Please update submodules and try again.")
-endif()
-
-#Searching for Collisions-library
-if(NOT EXISTS "${PROJECT_SOURCE_DIR}/Libraries/Collisions-library/CMakeLists.txt")
-    message(FATAL_ERROR "The submodules were not downloaded! GIT_SUBMODULE was turned off or failed. Please update submodules and try again.")
-endif()
-
 #Adding subdirectory works when the subdir has a CMakeLists.txt in it
 include_directories(Libraries)
 
@@ -53,10 +43,28 @@ add_subdirectory(Libraries/glfw)
 
 add_subdirectory(Libraries/GLAD)
 
-#add_subdirectory(Libraries/glm)
+add_subdirectory(Libraries/glm)
 
 add_subdirectory(Libraries/IMGUI)
 
-add_subdirectory(Libraries/Collisions-library)
+add_library(
+	ContainedOctree 
+	"${CMAKE_SOURCE_DIR}/Libraries/Spatial-Tree-Structures/Octree/ContainedOctree.h"
+)
 
-add_subdirectory(Libraries/Spatial-Tree-Structures)
+#Adding the Octree library
+add_library(
+	Octree 
+	"${CMAKE_SOURCE_DIR}/Libraries/Spatial-Tree-Structures/Octree/Octree.h"
+)
+
+set_target_properties(ContainedOctree  PROPERTIES LINKER_LANGUAGE CXX)
+set_target_properties(Octree PROPERTIES LINKER_LANGUAGE CXX)
+
+#Giving the path to the needed includes
+target_include_directories(ContainedOctree PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/Octree")
+target_include_directories(Octree PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/Octree")
+
+target_link_libraries(Octree PUBLIC glm)
+
+target_link_libraries(ContainedOctree PUBLIC Octree)
