@@ -1,5 +1,3 @@
-#pragma once
-
 //Custom Libraries
 
 //Default Libraries
@@ -10,7 +8,7 @@
 #include<algorithm>
 
 //Game files
-#include<Engine/Collisions/AABB.h>
+#include<AABB.h>
 
 //Macros
 #define NUMBER_OF_CHILDREN 4
@@ -23,6 +21,22 @@
 * consisting of the Quadtree and a few QuadTrees.
 */
 
+
+
+template<typename T>
+	struct Location
+	{
+		typename std::list<T>* items_container = nullptr;
+		typename std::list<T>::iterator items_iterator;
+		typename Collisions::AABB aabb;
+	};
+	
+enum class Directions : unsigned char {
+	North = 0x01, // = 0b00000001 -> 1 << 1
+	South = 0x02, // = 0b00000010 -> 1 << 2,
+	East = 0x04, // = 0b00000100 -> 1 << 3,
+	West = 0x08 // = 0b00001000 -> 1 << 4
+};
 
 namespace DataStructures {
 
@@ -56,7 +70,7 @@ namespace DataStructures {
 		//Set of minimal recursive functions that just do their tasks, without tree safety
 		void recursive_subdivide(void); //OK
 		void recursive_dfs(Collisions::AABB& area, std::list<T>& items); //OK
-		Trees::Location<T> recursive_insert(T object, Collisions::AABB area); //OK
+		Location<T> recursive_insert(T object, Collisions::AABB area); //OK
 		void recursive_resize(Collisions::AABB& area); //OK
 
 	protected:
@@ -132,7 +146,7 @@ namespace DataStructures {
 		* Modifiers
 		*//////////
 
-		Trees::Location<T> insert(T object, Collisions::AABB area); //OK
+		Location<T> insert(T object, Collisions::AABB area); //OK
 		void clear(); //OK 
 
 		/*//////////////
@@ -140,7 +154,7 @@ namespace DataStructures {
 		*///////////////
 
 		//TODO: To redesign this function for it to suit the chunking system better. To specify the template for the chunks
-		void shift(size_t leaf_nodes, Coordinates::Directions direction, std::list<std::pair<T, Collisions::AABB>>& returned_data);
+		void shift(size_t leaf_nodes, Directions direction, std::list<std::pair<T, Collisions::AABB>>& returned_data);
 	};
 
 
@@ -493,7 +507,7 @@ namespace DataStructures {
 
 
 	template<typename T>
-	Trees::Location<T> QuadTree<T>::insert(T object, Collisions::AABB area)
+	Location<T> QuadTree<T>::insert(T object, Collisions::AABB area)
 	{
 		//Checking whether anything can be inserted
 		if (!m_NodeReady)
@@ -532,7 +546,7 @@ namespace DataStructures {
 
 
 	template<typename T>
-	void QuadTree<T>::shift(size_t leaf_nodes, Coordinates::Directions direction, std::list<std::pair<T, Collisions::AABB>>& returned_data)
+	void QuadTree<T>::shift(size_t leaf_nodes, Directions direction, std::list<std::pair<T, Collisions::AABB>>& returned_data)
 	{
 		//TODO: To redesign this function for it to suit the chunking system better. To specify the template for the chunks
 
@@ -545,25 +559,25 @@ namespace DataStructures {
 		//Calculating the bounding box
 		switch (direction)
 		{
-		case Coordinates::Directions::North:
+		case Directions::North:
 
 			bounding_box[0].z -= leaf_nodes * m_LeafNodeSide;
 			bounding_box[1].z -= leaf_nodes * m_LeafNodeSide;
 
 			break;
-		case Coordinates::Directions::South:
+		case Directions::South:
 
 			bounding_box[0].z += leaf_nodes * m_LeafNodeSide;
 			bounding_box[1].z += leaf_nodes * m_LeafNodeSide;
 
 			break;
-		case Coordinates::Directions::East:
+		case Directions::East:
 
 			bounding_box[0].x += leaf_nodes * m_LeafNodeSide;
 			bounding_box[1].x += leaf_nodes * m_LeafNodeSide;
 
 			break;
-		case Coordinates::Directions::West:
+		case Directions::West:
 
 			bounding_box[0].x -= leaf_nodes * m_LeafNodeSide;
 			bounding_box[1].x -= leaf_nodes * m_LeafNodeSide;
@@ -789,7 +803,7 @@ namespace DataStructures {
 	}
 
 	template<typename T>
-	Trees::Location<T> QuadTree<T>::recursive_insert(T object, Collisions::AABB area)
+	Location<T> QuadTree<T>::recursive_insert(T object, Collisions::AABB area)
 	{
 		//Checking whether the children can contain the item
 		for (uint8_t i = 0; i < NUMBER_OF_CHILDREN; i++)

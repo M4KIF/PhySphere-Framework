@@ -1,7 +1,7 @@
 #pragma once
 
 // Custom Libraries
-#include<glm.hpp>
+#include<glm/glm.hpp>
 
 // Default Libraries
 #include<array>

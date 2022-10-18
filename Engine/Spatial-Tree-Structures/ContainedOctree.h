@@ -1,11 +1,13 @@
 #pragma once
 
 //Custom Libraries
+#include<TreeData.h>
 
 //Default Libraries
 
 //Game files
-#include<Engine/DataStructures/Octree.h>
+#ifndef OCTREE_H
+#define OCTREE_H 1
 
 
 /*
@@ -16,18 +18,6 @@
 * iterators to the items, It's cheaper* 
 */
 
-namespace Trees {
-
-	template<typename T>
-	struct Location
-	{
-		typename std::list<T>* items_container = nullptr;
-		typename std::list<T>::iterator items_iterator;
-		typename Collisions::AABB aabb;
-	};
-
-}
-
 namespace DataStructures {
 
 	template<typename T>
@@ -37,7 +27,7 @@ namespace DataStructures {
 		T item;
 
 		//The location to the container inside Octree that holds the iterator to this exact element above
-		Trees::Location<typename std::list<OctreeItem<T>>::iterator> item_position;
+		Location<typename std::list<OctreeItem<T>>::iterator> item_position;
 	};
 
 	template<typename T>
@@ -110,7 +100,7 @@ namespace DataStructures {
 		* Space altering
 		*/
 
-		void shift(size_t leaf_nodes, Coordinates::Directions direction, std::list<std::pair<T, Collisions::AABB>>& returned_data); //TODO
+		void shift(size_t leaf_nodes, Directions direction, std::list<std::pair<T, Collisions::AABB>>& returned_data); //TODO
 
 	};
 
@@ -337,7 +327,7 @@ namespace DataStructures {
 	*/////////////////////
 
 	template<typename T>
-	void ContainedOctree<T>::shift(size_t leaf_nodes, Coordinates::Directions direction, std::list<std::pair<T, Collisions::AABB>>& returned_data)
+	void ContainedOctree<T>::shift(size_t leaf_nodes, Directions direction, std::list<std::pair<T, Collisions::AABB>>& returned_data)
 	{
 		//Storing the new coordinates for the tree
 		std::array<glm::vec3, 2> bounding_box = m_Root.aabb().bounding_region();
@@ -348,25 +338,25 @@ namespace DataStructures {
 		//Calculating the bounding box
 		switch (direction)
 		{
-		case Coordinates::Directions::North:
+		case Directions::North:
 
 			bounding_box[0].z -= leaf_nodes * leaf_side_length;
 			bounding_box[1].z -= leaf_nodes * leaf_side_length;
 
 			break;
-		case Coordinates::Directions::South:
+		case Directions::South:
 
 			bounding_box[0].z += leaf_nodes * leaf_side_length;
 			bounding_box[1].z += leaf_nodes * leaf_side_length;
 
 			break;
-		case Coordinates::Directions::East:
+		case Directions::East:
 
 			bounding_box[0].x += leaf_nodes * leaf_side_length;
 			bounding_box[1].x += leaf_nodes * leaf_side_length;
 
 			break;
-		case Coordinates::Directions::West:
+		case Directions::West:
 
 			bounding_box[0].x -= leaf_nodes * leaf_side_length;
 			bounding_box[1].x -= leaf_nodes * leaf_side_length;
@@ -406,3 +396,5 @@ namespace DataStructures {
 	}
 
 }
+
+#endif

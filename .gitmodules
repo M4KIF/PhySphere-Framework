@@ -10,3 +10,6 @@
 [submodule "Libraries/PerlinNoise"]
 	path = Libraries/PerlinNoise
 	url = https://github.com/Reputeless/PerlinNoise.git
+[submodule "Libraries/thread-pool"]
+	path = Libraries/thread-pool
+	url = https://github.com/bshoshany/thread-pool.git

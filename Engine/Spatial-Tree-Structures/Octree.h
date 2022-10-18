@@ -1,6 +1,5 @@
-#pragma once
-
 //Custom Libraries
+#include<TreeData.h>
 
 //Default Libraries
 #include<list>
@@ -10,7 +9,7 @@
 #include<algorithm>
 
 //Game files
-#include<Engine/Collisions/AABB.h>
+#include<AABB.h>
 
 //Macros
 #define MINIMUM_DIMENSION 1.0f
@@ -77,7 +76,7 @@ namespace DataStructures {
 		//Set of minimal recursive functions that just do their tasks, without tree safety
 		void recursive_subdivide(void); //OK
 		void recursive_dfs(Collisions::AABB& area, std::list<T>& items); //OK
-		Trees::Location<T> recursive_insert(T object, Collisions::AABB area); //OK
+		Location<T> recursive_insert(T object, Collisions::AABB area); //OK
 		void recursive_resize(Collisions::AABB& area); //OK
 
 
@@ -157,14 +156,14 @@ namespace DataStructures {
 		* Modifiers
 		*/
 
-		Trees::Location<T> insert(T object, Collisions::AABB area); //OK
+		Location<T> insert(T object, Collisions::AABB area); //OK
 		void clear(); //OK 
 
 		/*
 		* Movement
 		*/
 
-		void shift(size_t leaf_nodes, Coordinates::Directions direction, std::list<std::pair<T, Collisions::AABB>>& returned_data); //TODO
+		void shift(size_t leaf_nodes, Directions direction, std::list<std::pair<T, Collisions::AABB>>& returned_data); //TODO
 	};
 
 
@@ -519,7 +518,7 @@ namespace DataStructures {
 
 
 	template<typename T>
-	Trees::Location<T> Octree<T>::insert(T object, Collisions::AABB area)
+	Location<T> Octree<T>::insert(T object, Collisions::AABB area)
 	{
 		//Checking whether anything can be inserted
 		if (!m_NodeReady)
@@ -558,7 +557,7 @@ namespace DataStructures {
 
 
 	template<typename T>
-	void Octree<T>::shift(size_t leaf_nodes, Coordinates::Directions direction, std::list<std::pair<T, Collisions::AABB>>& returned_data)
+	void Octree<T>::shift(size_t leaf_nodes, Directions direction, std::list<std::pair<T, Collisions::AABB>>& returned_data)
 	{
 		//Storing the new coordinates for the tree
 		std::array<glm::vec3, 2> bounding_box = m_Position.bounding_region();
@@ -569,25 +568,25 @@ namespace DataStructures {
 		//Calculating the bounding box
 		switch (direction)
 		{
-		case Coordinates::Directions::North:
+		case Directions::North:
 
 			bounding_box[0].z -= leaf_nodes * m_LeafNodeSide;
 			bounding_box[1].z -= leaf_nodes * m_LeafNodeSide;
 
 			break;
-		case Coordinates::Directions::South:
+		case Directions::South:
 			
 			bounding_box[0].z += leaf_nodes * m_LeafNodeSide;
 			bounding_box[1].z += leaf_nodes * m_LeafNodeSide;
 
 			break;
-		case Coordinates::Directions::East:
+		case Directions::East:
 
 			bounding_box[0].x += leaf_nodes * m_LeafNodeSide;
 			bounding_box[1].x += leaf_nodes * m_LeafNodeSide;
 
 			break;
-		case Coordinates::Directions::West:
+		case Directions::West:
 			
 			bounding_box[0].x -= leaf_nodes * m_LeafNodeSide;
 			bounding_box[1].x -= leaf_nodes * m_LeafNodeSide;
@@ -865,7 +864,7 @@ namespace DataStructures {
 	}
 
 	template<typename T>
-	Trees::Location<T> Octree<T>::recursive_insert(T object, Collisions::AABB area)
+	Location<T> Octree<T>::recursive_insert(T object, Collisions::AABB area)
 	{
 		//Checking whether the children can contain the item
 		for (int i = 0; i < NUMBER_OF_OCTANTS; i++)
