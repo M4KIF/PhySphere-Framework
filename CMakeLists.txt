@@ -47,24 +47,53 @@ add_subdirectory(Libraries/glm)
 
 add_subdirectory(Libraries/IMGUI)
 
+#Adding the Octree library
 add_library(
 	ContainedOctree 
 	"${CMAKE_SOURCE_DIR}/Libraries/Spatial-Tree-Structures/Octree/ContainedOctree.h"
 )
 
-#Adding the Octree library
 add_library(
 	Octree 
 	"${CMAKE_SOURCE_DIR}/Libraries/Spatial-Tree-Structures/Octree/Octree.h"
 )
 
+#Setting the language to cxx because the libs only contain headers
 set_target_properties(ContainedOctree  PROPERTIES LINKER_LANGUAGE CXX)
 set_target_properties(Octree PROPERTIES LINKER_LANGUAGE CXX)
 
 #Giving the path to the needed includes
-target_include_directories(ContainedOctree PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/Octree")
-target_include_directories(Octree PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/Octree")
+target_include_directories(ContainedOctree PUBLIC "${CMAKE_SOURCE_DIR}/Libraries/Spatial-Tree-Structures/Octree")
+target_include_directories(Octree PUBLIC "${CMAKE_SOURCE_DIR}/Libraries/Spatial-Tree-Structures/Octree")
 
 target_link_libraries(Octree PUBLIC glm)
 
 target_link_libraries(ContainedOctree PUBLIC Octree)
+
+#Adding the quadtree as a library
+add_library(
+	ContainedQuadTree
+	"${CMAKE_SOURCE_DIR}/Libraries/Spatial-Tree-Structures/QuadTree/ContainedQuadTree.h"
+)
+
+#Adding the Octree library
+add_library(
+	QuadTree 
+	"${CMAKE_SOURCE_DIR}/Libraries/Spatial-Tree-Structures/QuadTree/QuadTree.h"
+)
+
+#Setting the language to cxx because the libs only contain headers
+set_target_properties(ContainedQuadTree  PROPERTIES LINKER_LANGUAGE CXX)
+set_target_properties(QuadTree PROPERTIES LINKER_LANGUAGE CXX)
+
+#Giving the path to the needed includes
+target_include_directories(ContainedQuadTree PUBLIC "${CMAKE_SOURCE_DIR}/Libraries/Spatial-Tree-Structures/QuadTree/")
+target_include_directories(QuadTree PUBLIC "${CMAKE_SOURCE_DIR}/Libraries/Spatial-Tree-Structures/QuadTree/")
+
+target_link_libraries(QuadTree PUBLIC glm)
+
+target_link_libraries(ContainedQuadTree PUBLIC Octree)
+
+include_directories(Libraries)
+
+add_subdirectory(App)

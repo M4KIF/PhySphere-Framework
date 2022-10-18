@@ -13,9 +13,9 @@
 #include<chrono>
 
 //Game Files
-//#include<Engine/DataStructures/Octree.h>
-//#include<Engine/DataStructures/ContainedOctree.h>
-//#include<Engine/DataStructures/QuadTree.h>
+#include<Spatial-Tree-Structures/Octree/Octree.h>
+#include<Spatial-Tree-Structures/Octree/ContainedOctree.h>
+#include<Spatial-Tree-Structures/QuadTree/QuadTree.h>
 
 
 
